@@ -1,0 +1,15 @@
+#navBarActive2 a.active{
+    background-color: rgb(57, 54, 54);
+    font-weight: bold;
+    border-bottom: 4px solid rgb(2, 170, 2);
+    border-radius: 10px;
+    color: white;
+}   
+
+#navBarActive1 a.active{
+    background-color: white;
+    font-weight: bold;
+    border-bottom: 4px solid rgb(3, 221, 3);
+    border-radius: 10px;
+    color: black;
+}
