@@ -70,9 +70,11 @@ const JobPostForm = () => {
                 ...data,
                 recruitmentImageUrl: imageUrl,
                 companyInfo,
-                userInfo
+                userInfo,
+                date: new Date().toISOString(),
+                view: 0
             };
-
+            
             delete jobData.recruitmentImage;
 
             axiosBase.post("/jobs", jobData)
@@ -225,7 +227,7 @@ const JobPostForm = () => {
                     <label className="block text-gray-700 font-bold mb-2">Salary*</label>
                     <input
                         type="number"
-                        {...register('salaryRange', { required: true })}
+                        {...register('salary', { required: true })}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.salaryRange && <span className="text-red-500">This field is required</span>}

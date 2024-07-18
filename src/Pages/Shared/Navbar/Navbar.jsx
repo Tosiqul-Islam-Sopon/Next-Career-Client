@@ -13,7 +13,7 @@ const Navbar = () => {
     const [rightDropdownOpen, setRightDropdownOpen] = useState(false);
     const leftDropdownRef = useRef(null);
     const rightDropdownRef = useRef(null);
-    const userRole = "recruiter";
+    const userRole = "user";
 
     const navLinks = <>
         <li onClick={() => setLeftDropdownOpen(!leftDropdownOpen)}><NavLink to="/">Home</NavLink></li>
