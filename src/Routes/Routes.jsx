@@ -9,6 +9,11 @@ import JobPostForm from "../Pages/Recruiter/JobPostForm/JobPostForm";
 import Home from "../Pages/Shared/Home/Home";
 import PrivateRoute from "../PrivateRoutes/PrivateRoute";
 import RecruiterRegistration from "../Pages/Shared/Authentication/RecruiterRegistration";
+import JobDetails from "../Pages/User/JobDetails/JobDetails";
+import Jobs from "../Pages/User/Jobs/Jobs";
+import Dashboard from "../Layoutes/Dashboard";
+import PersonalInfo from "../Pages/User/Profile/PersonalInfo/PersonalInfo";
+import EditPersonalInfo from "../Pages/User/Profile/PersonalInfo/EditPersonalInfo";
 
 const router = createBrowserRouter([
     {
@@ -35,9 +40,31 @@ const router = createBrowserRouter([
             {
                 path: "/postJob",
                 element: <PrivateRoute><JobPostForm></JobPostForm></PrivateRoute>
+            },
+            {
+                path: "/jobDetails/:jobId",
+                element: <JobDetails></JobDetails>
+            },
+            {
+                path: "jobs",
+                element: <Jobs></Jobs>
             }
         ],
     },
+    {
+        path: "/dashboard",
+        element: <Dashboard></Dashboard>,
+        children: [
+            {
+                path: "personalInfo",
+                element: <PersonalInfo></PersonalInfo>
+            },
+            {
+                path: "editPersonalInfo",
+                element: <EditPersonalInfo></EditPersonalInfo>
+            }
+        ]   
+    }
 ]);
 
 export default router;

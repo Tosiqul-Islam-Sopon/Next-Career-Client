@@ -4,9 +4,10 @@ import { IoMdTime } from 'react-icons/io';
 import { IoLocationOutline } from 'react-icons/io5';
 import { MdGroups } from 'react-icons/md';
 import { PiOfficeChairLight } from 'react-icons/pi';
+import { Link } from 'react-router-dom';
 
 const JobCard = ({ job }) => {
-    const { jobTitle, jobType, salary, deadline, recruitmentImageUrl, companyInfo, jobLocation, onSitePlace, view, vacancy } = job;
+    const { _id, jobTitle, jobType, salary, deadline, recruitmentImageUrl, companyInfo, jobLocation, onSitePlace, view, vacancy } = job;
     const { companyName, companyLogo } = companyInfo;
     return (
         <div className="mx-10 my-5 p-7 shadow-xl flex gap-10 transform transition-transform duration-500 hover:scale-105 hover:shadow-2xl rounded-xl border-t">
@@ -24,7 +25,9 @@ const JobCard = ({ job }) => {
                         </div>
                     </div>
                     <div>
-                        <button className='bg-green-500 px-5 py-2 rounded-md text-white hover:bg-green-900'>View</button>
+                        <Link to={`/jobDetails/${_id}`}>
+                            <button className='bg-green-500 px-5 py-2 rounded-md text-white hover:bg-green-900'>View</button>
+                        </Link>
                     </div>
                 </div>
                 <div className='flex justify-between mt-5'>

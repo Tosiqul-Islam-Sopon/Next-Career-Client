@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import useAxiosBase from "../../../CustomHooks/useAxiosBase";
-import JobCard from "../../Shared/JobCard/JobCard";
+import useAxiosBase from "../../../../CustomHooks/useAxiosBase";
+import JobCard from "../../../Shared/JobCard/JobCard";
+import { Link } from "react-router-dom";
 
 const FeaturedJobs = () => {
     const axiosBase = useAxiosBase();
@@ -28,7 +29,9 @@ const FeaturedJobs = () => {
             </div>
 
             <div className="mx-auto w-fit mt-5">
-                <button className="text-white border-none bg-green-500 hover:bg-green-800 px-4 py-2 rouded uppercase transform transition-transform duration-500 hover:scale-105">View all jobs</button>
+                <Link to={"/jobs"}>
+                    <button className="text-white border-none bg-green-500 hover:bg-green-800 px-4 py-2 rouded uppercase transform transition-transform duration-500 hover:scale-105 rounded">View all jobs</button>
+                </Link>
             </div>
         </div>
     );
