@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../../../Providers/AuthProvider";
 import { useForm } from "react-hook-form";
 import useAxiosBase from "../../../../CustomHooks/useAxiosBase";
@@ -24,15 +24,7 @@ const EditPersonalInfo = () => {
         }
     });
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        defaultValues: userInfo || {}
-    });
-
-    useEffect(() => {
-        if (userInfo) {
-            reset(userInfo);
-        }
-    }, [userInfo, reset]);
+    const { register, handleSubmit, formState: { errors } } = useForm();
 
     if (isLoading || loading) {
         return <div className='mt-32 text-center text-5xl text-green-400'>Loading...</div>;
@@ -67,13 +59,14 @@ const EditPersonalInfo = () => {
     };
 
     const onSubmit = async (data) => {
-    
-        const { _id, ...updateData } = data;
-    
+        
+        data.email = userInfo.email;
+        console.log(data);
+
         const updateUser = async () => {
             try {
-                const updateResponse = await axiosBase.patch(`/user/${userInfo._id}`, updateData);
-    
+                const updateResponse = await axiosBase.patch(`/user/${userInfo._id}`, data);
+
                 if (updateResponse.status === 200) {
                     Swal.fire({
                         position: "center",
@@ -96,22 +89,22 @@ const EditPersonalInfo = () => {
                 });
             }
         };
-    
+
         if (selectedFile) {
             const formData = new FormData();
             formData.append('image', selectedFile);
-    
+
             try {
                 const response = await fetch(image_hosting_api, {
                     method: 'POST',
                     body: formData
                 });
                 const result = await response.json();
-    
+
                 if (result.success) {
-                    updateData.photoURL = result.data.url; // Update form data with new image URL
-    
-                    await setNameAndPhoto(updateData.name, updateData.photoURL);
+                    data.photoURL = result.data.url; // Update form data with new image URL
+
+                    await setNameAndPhoto(data.name, data.photoURL);
                     await updateUser();
                 } else {
                     throw new Error("Image upload failed");
@@ -125,9 +118,9 @@ const EditPersonalInfo = () => {
                     timer: 1500
                 });
             }
-        } else if (updateData.name !== user.displayName) {
+        } else if (data.name !== user.displayName) {
             try {
-                await setNameAndPhoto(updateData.name, user.photoURL);
+                await setNameAndPhoto(data.name, user.photoURL);
                 await updateUser();
             } catch {
                 Swal.fire({
@@ -170,6 +163,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="text"
                         {...register('name', { required: true })}
+                        defaultValue={userInfo?.name}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.name && <span className="text-red-500">This field is required</span>}
@@ -180,6 +174,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="email"
                         {...register('email')}
+                        value={userInfo?.email}
                         className="w-full p-2 border border-gray-300 bg-gray-200 cursor-not-allowed rounded-md"
                         disabled
                     />
@@ -189,7 +184,8 @@ const EditPersonalInfo = () => {
                     <label className="block text-gray-700 font-bold mb-2">Contact No*</label>
                     <input
                         type="tel"
-                        {...register('ContactNo', { required: true })}
+                        {...register('contactNo', { required: true })}
+                        defaultValue={userInfo?.personalInfo?.contactNo}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.ContactNo && <span className="text-red-500">This field is required</span>}
@@ -200,6 +196,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="text"
                         {...register('presentAddress', { required: true })}
+                        defaultValue={userInfo?.personalInfo?.presentAddress}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.presentAddress && <span className="text-red-500">This field is required</span>}
@@ -210,6 +207,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="text"
                         {...register('permanentAddress', { required: true })}
+                        defaultValue={userInfo?.personalInfo?.permanentAddress}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.permanentAddress && <span className="text-red-500">This field is required</span>}
@@ -220,6 +218,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="date"
                         {...register('dateOfBirth', { required: true })}
+                        defaultValue={userInfo?.personalInfo?.dateOfBirth}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.dateOfBirth && <span className="text-red-500">This field is required</span>}
@@ -230,6 +229,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="text"
                         {...register('nationality', { required: true })}
+                        defaultValue={userInfo?.personalInfo?.nationality}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                     {errors.nationality && <span className="text-red-500">This field is required</span>}
@@ -239,6 +239,7 @@ const EditPersonalInfo = () => {
                     <label className="block text-gray-700 font-bold mb-2">Gender*</label>
                     <select
                         {...register('gender', { required: true })}
+                        defaultValue={userInfo?.personalInfo?.gender ? userInfo.personalInfo.gender : ""}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     >
                         <option disabled value="">Select Gender</option>
@@ -254,6 +255,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="url"
                         {...register('linkedIn')}
+                        defaultValue={userInfo?.personalInfo?.linkedIn}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                 </div>
@@ -263,6 +265,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="url"
                         {...register('github')}
+                        defaultValue={userInfo?.personalInfo?.github}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                 </div>
@@ -272,6 +275,7 @@ const EditPersonalInfo = () => {
                     <input
                         type="url"
                         {...register('personalWebsite')}
+                        defaultValue={userInfo?.personalInfo?.personalWebsite}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     />
                 </div>
@@ -280,6 +284,7 @@ const EditPersonalInfo = () => {
                     <label className="block text-gray-700 font-bold mb-2">Summary/Bio</label>
                     <textarea
                         {...register('bio')}
+                        defaultValue={userInfo?.personalInfo?.bio}
                         className="w-full p-2 border border-gray-300 rounded-md"
                     ></textarea>
                 </div>

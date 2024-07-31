@@ -20,7 +20,8 @@ const PersonalInfo = () => {
         return <div className='mt-32 text-center text-5xl text-green-400'>Loading...</div>;
     }
 
-    const { name, email, dateOfBirth, ContactNo, bio, gender, github, linkedIn, nationality, permanentAddress, personalWebsite, presentAddress } = userInfo;
+    const { name, email, personalInfo } = userInfo;
+    const {dateOfBirth, ContactNo, bio, gender, github, linkedIn, nationality, permanentAddress, personalWebsite, presentAddress} = personalInfo;
 
     return (
         <div className="max-w-3xl mx-auto p-8 border rounded-lg shadow-lg bg-white">
