@@ -14,6 +14,7 @@ import Jobs from "../Pages/User/Jobs/Jobs";
 import Dashboard from "../Layoutes/Dashboard";
 import PersonalInfo from "../Pages/User/Profile/PersonalInfo/PersonalInfo";
 import EditPersonalInfo from "../Pages/User/Profile/PersonalInfo/EditPersonalInfo";
+import Education from "../Pages/User/Profile/Education/Education";
 
 const router = createBrowserRouter([
     {
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
             {
                 path: "editPersonalInfo",
                 element: <EditPersonalInfo></EditPersonalInfo>
+            },
+            {
+                path: "education",
+                element: <Education></Education>
             }
         ]   
     }

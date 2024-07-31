@@ -36,7 +36,7 @@ const Dashboard = () => {
                                         </NavLink>
                                     </li>
                                     <li>
-                                        <NavLink to="/dashboard/wishList"
+                                        <NavLink to="/dashboard/education"
                                             className="border-2 border-orange-500 rounded-2xl hover:bg-orange-500 hover:text-white w-full">
                                             <FaGraduationCap />
                                             Education
