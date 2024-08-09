@@ -15,6 +15,8 @@ import Dashboard from "../Layoutes/Dashboard";
 import PersonalInfo from "../Pages/User/Profile/PersonalInfo/PersonalInfo";
 import EditPersonalInfo from "../Pages/User/Profile/PersonalInfo/EditPersonalInfo";
 import Education from "../Pages/User/Profile/Education/Education";
+import Experience from "../Pages/User/Profile/Experience/Experience";
+import Resume from "../Pages/User/Profile/Resume/Resume";
 
 const router = createBrowserRouter([
     {
@@ -67,6 +69,14 @@ const router = createBrowserRouter([
             {
                 path: "education",
                 element: <Education></Education>
+            },
+            {
+                path: "experience",
+                element: <Experience></Experience>
+            },
+            {
+                path: "resume",
+                element: <Resume></Resume>
             }
         ]   
     }

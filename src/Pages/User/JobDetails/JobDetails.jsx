@@ -19,6 +19,8 @@ const JobDetails = () => {
         return <div className="mt-36 text-center">Loading...</div>;
     }
 
+    // console.log(job);
+
     const {
         jobTitle,
         jobDescription,

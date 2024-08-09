@@ -43,7 +43,7 @@ const Dashboard = () => {
                                         </NavLink>
                                     </li>
                                     <li >
-                                        <NavLink to="/dashboard/propertyBought"
+                                        <NavLink to="/dashboard/experience"
                                             className="border-2 border-orange-500 rounded-2xl hover:bg-orange-500 hover:text-white w-full"
                                         >
                                             <FaBriefcase   />
@@ -51,7 +51,7 @@ const Dashboard = () => {
                                         </NavLink>
                                     </li>
                                     <li >
-                                        <NavLink to="/dashboard/myReviews"
+                                        <NavLink to="/dashboard/resume"
                                             className="border-2 border-orange-500 rounded-2xl hover:bg-orange-500 hover:text-white w-full"
                                         >
                                             <RiFileListFill />
