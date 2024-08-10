@@ -2,9 +2,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import { useContext } from "react";
+import { AuthContext } from "../../../Providers/AuthProvider";
+import Swal from "sweetalert2";
 
 const JobDetails = () => {
     const { jobId } = useParams();
+    const { user } = useContext(AuthContext);
     const axiosBase = useAxiosBase();
 
     const { data: job = null, isLoading } = useQuery({
@@ -15,7 +19,15 @@ const JobDetails = () => {
         }
     });
 
-    if (isLoading) {
+    const { data: userInfo = null, isLoading: userLoading } = useQuery({
+        queryKey: ['user', user?.email],
+        queryFn: async () => {
+            const response = await axiosBase.get(`/user/${user?.email}`);
+            return response.data;
+        }
+    })
+
+    if (isLoading || userLoading) {
         return <div className="mt-36 text-center">Loading...</div>;
     }
 
@@ -37,6 +49,48 @@ const JobDetails = () => {
         vacancy
     } = job;
 
+    const handleApplyNow = async () => {
+        try {
+            // Check if the user has a resume uploaded
+            const response = await axiosBase.get(`/user/${userInfo._id}/has-resume`);
+            const hasResume = response.data.hasResume;
+
+            // Check if the user has completed their profile
+            if (hasResume && userInfo.personalInfo && userInfo.education) {
+                // Send a request to apply for the job
+                const applyResponse = await axiosBase.patch(`/jobs/apply`, {
+                    userId: userInfo._id,
+                    jobId: job._id,
+                });
+
+                if (applyResponse.status === 200) {
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'You have successfully applied for the job!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } else {
+                Swal.fire({
+                    title: 'Incomplete Profile',
+                    text: 'Please upload your resume and complete your profile before applying.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+            }
+        } catch (error) {
+            console.error('Error applying for job:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'Failed to apply for the job',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+    };
+
+
     return (
         <div className="container mx-auto mt-28 mb-8 px-4 md:px-12">
             <div className="bg-white shadow-md rounded-lg p-6">
@@ -48,7 +102,7 @@ const JobDetails = () => {
                             <span>{companyInfo?.companyName}</span> | <span>{jobLocation === "Remote" ? jobLocation : onSitePlace}</span>
                         </div>
                         <div className="text-green-500 font-semibold">
-                        ৳{salary} / Month
+                            ৳{salary} / Month
                         </div>
                     </div>
                 </div>
@@ -86,7 +140,9 @@ const JobDetails = () => {
                 </div>
 
                 <div className="flex justify-center mt-8">
-                    <button className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300">
+                    <button
+                        onClick={handleApplyNow}
+                        className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300">
                         Apply Now
                     </button>
                 </div>
