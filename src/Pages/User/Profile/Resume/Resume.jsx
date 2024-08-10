@@ -23,7 +23,6 @@ const Resume = () => {
             if (userInfo) {
                 console.log('checking........  ');
                 const response = await axiosBase.get(`/user/${userInfo._id}/has-resume`);
-                console.log(response.data);
                 setHasResume(response.data.hasResume);
             }
         };

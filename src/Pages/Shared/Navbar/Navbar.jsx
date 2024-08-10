@@ -23,7 +23,7 @@ const Navbar = () => {
     const navLinksLgForUser = <>
         <li><NavLink className={"hover:bg-green-400 "} to="/">Home</NavLink></li>
         <li><NavLink className={"hover:bg-green-400 "} to="/jobs">Find Job</NavLink></li>
-        <li><NavLink className={"hover:bg-green-400 "} to="/myAppliedJobs">My Jobs</NavLink></li>
+        <li><NavLink className={"hover:bg-green-400 "} to="/appliedJobs">Applied Jobs</NavLink></li>
     </>
 
     const navLinksLgForRecruiter = <>
