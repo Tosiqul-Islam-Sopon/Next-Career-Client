@@ -18,6 +18,7 @@ import Education from "../Pages/User/Profile/Education/Education";
 import Experience from "../Pages/User/Profile/Experience/Experience";
 import Resume from "../Pages/User/Profile/Resume/Resume";
 import AppliedJobs from "../Pages/User/AppliedJobs/AppliedJobs";
+import JobsByCategory from "../Pages/User/Home/Categories/JobsByCategory ";
 
 const router = createBrowserRouter([
     {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
             {
                 path: "appliedJobs",
                 element: <AppliedJobs></AppliedJobs>
+            },
+            {
+                path: "/jobs/:category",
+                element: <JobsByCategory></JobsByCategory>
             }
         ],
     },

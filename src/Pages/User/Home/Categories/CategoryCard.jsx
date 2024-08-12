@@ -1,9 +1,18 @@
-// src/components/CategoryCard.js
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 const CategoryCard = ({ icon, title, vacancies }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/jobs/${title}`);
+  };
+
   return (
-    <div className="bg-white shadow-md p-6 rounded-lg text-center transform transition-transform duration-500 hover:scale-105">
+    <div
+      onClick={handleClick}
+      className="bg-white shadow-md p-6 rounded-lg text-center transform transition-transform duration-500 hover:scale-105 cursor-pointer"
+    >
       <div className="flex justify-center mb-4 text-green-500">
         {icon}
       </div>
