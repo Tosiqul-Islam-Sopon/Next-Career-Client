@@ -1,11 +1,9 @@
-import { useContext } from "react";
-import { Navigate, useLocation } from "react-router-dom";
 import PropTypes from 'prop-types';
-import { AuthContext } from "../Providers/AuthProvider";
+import useUserRole from '../CustomHooks/useUserRole';
+import { Navigate } from 'react-router-dom';
+const UserPrivateRoute = ({ children }) => {
 
-const PrivateRoute = ({ children }) => {
-    const { user, loading } = useContext(AuthContext);
-    const location = useLocation();
+    const { userRole, loading } = useUserRole();
 
     if (loading) {
         return (
@@ -20,15 +18,15 @@ const PrivateRoute = ({ children }) => {
         );
     }
 
-    if (user) {
+    if (userRole == 'user') {
         return children;
     }
 
     return <Navigate to="/login" state={{ from: location }} replace />;
 };
 
-PrivateRoute.propTypes = {
+UserPrivateRoute.propTypes = {
     children: PropTypes.node.isRequired
 };
 
-export default PrivateRoute;
+export default UserPrivateRoute;

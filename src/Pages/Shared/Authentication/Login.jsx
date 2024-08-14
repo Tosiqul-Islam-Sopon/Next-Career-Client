@@ -29,7 +29,7 @@ const Login = () => {
                     showConfirmButton: false,
                     timer: 1500
                 });
-                navigate(location?.state ? location.state : "/");
+                navigate(location?.state?.from?.pathname || "/");
             })
             .catch(error => {
                 Swal.fire({
@@ -49,8 +49,8 @@ const Login = () => {
                     role: "user"
                 }
                 axiosBase.post("/users", userInfo)
-
-                navigate(location?.state ? location.state : "/");
+                console.log(location);
+                navigate(location?.state?.from?.pathname || "/");
             })
             .catch(error => {
 

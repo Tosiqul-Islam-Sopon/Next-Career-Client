@@ -19,6 +19,7 @@ import Experience from "../Pages/User/Profile/Experience/Experience";
 import Resume from "../Pages/User/Profile/Resume/Resume";
 import AppliedJobs from "../Pages/User/AppliedJobs/AppliedJobs";
 import JobsByCategory from "../Pages/User/Home/Categories/JobsByCategory ";
+import UserPrivateRoute from "../PrivateRoutes/UserPrivateRoute";
 
 const router = createBrowserRouter([
     {
@@ -51,12 +52,12 @@ const router = createBrowserRouter([
                 element: <JobDetails></JobDetails>
             },
             {
-                path: "jobs",
+                path: "/jobs",
                 element: <Jobs></Jobs>
             },
             {
-                path: "appliedJobs",
-                element: <AppliedJobs></AppliedJobs>
+                path: "/appliedJobs",
+                element: <PrivateRoute><AppliedJobs></AppliedJobs></PrivateRoute>
             },
             {
                 path: "/jobs/:category",
@@ -66,27 +67,27 @@ const router = createBrowserRouter([
     },
     {
         path: "/dashboard",
-        element: <Dashboard></Dashboard>,
+        element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
         children: [
             {
                 path: "personalInfo",
-                element: <PersonalInfo></PersonalInfo>
+                element: <UserPrivateRoute><PersonalInfo></PersonalInfo></UserPrivateRoute>
             },
             {
                 path: "editPersonalInfo",
-                element: <EditPersonalInfo></EditPersonalInfo>
+                element: <UserPrivateRoute><EditPersonalInfo></EditPersonalInfo></UserPrivateRoute>
             },
             {
                 path: "education",
-                element: <Education></Education>
+                element: <UserPrivateRoute><Education></Education></UserPrivateRoute>
             },
             {
                 path: "experience",
-                element: <Experience></Experience>
+                element: <UserPrivateRoute><Experience></Experience></UserPrivateRoute>
             },
             {
                 path: "resume",
-                element: <Resume></Resume>
+                element: <UserPrivateRoute><Resume></Resume></UserPrivateRoute>
             }
         ]   
     }

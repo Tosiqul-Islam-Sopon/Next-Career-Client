@@ -44,7 +44,7 @@ const Categories = () => {
       .then(res => {
         const formattedCategories = res.data.map(category => ({
           title: category._id,
-          vacancies: category.vacancies,
+          vacancy: category.totalVacancy,
           icon: iconMap[category._id] || <MdBusiness size={40} /> // Fallback icon
         }));
         setCategories(formattedCategories);
@@ -63,7 +63,7 @@ const Categories = () => {
             key={index}
             icon={category.icon}
             title={category.title}
-            vacancies={category.vacancies}
+            vacancies={category.vacancy}
           />
         ))}
       </div>

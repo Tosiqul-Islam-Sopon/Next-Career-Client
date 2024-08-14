@@ -7,10 +7,11 @@ import { IoAddCircle, IoPersonCircle } from "react-icons/io5";
 import { MdSell } from "react-icons/md";
 import Navbar from "../Pages/Shared/Navbar/Navbar";
 import { BsInfoCircle } from "react-icons/bs";
+import useUserRole from "../CustomHooks/useUserRole";
 
 const Dashboard = () => {
 
-    const userRole = "user"
+    const { userRole } = useUserRole();
 
     return (
         <div>
@@ -46,7 +47,7 @@ const Dashboard = () => {
                                         <NavLink to="/dashboard/experience"
                                             className="border-2 border-orange-500 rounded-2xl hover:bg-orange-500 hover:text-white w-full"
                                         >
-                                            <FaBriefcase   />
+                                            <FaBriefcase />
                                             Experience
                                         </NavLink>
                                     </li>
@@ -144,7 +145,7 @@ const Dashboard = () => {
                                                         to="/dashboard/mySoldProperties"
                                                         className="border-2 border-orange-500 rounded-2xl hover:bg-orange-500 hover:text-white w-full"
                                                     >
-                                                        <MdSell/>
+                                                        <MdSell />
                                                         My sold properties
                                                     </NavLink>
                                                 </li>

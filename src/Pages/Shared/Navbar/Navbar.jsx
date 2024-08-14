@@ -4,6 +4,7 @@ import { AuthContext } from "../../../Providers/AuthProvider";
 import { IoMdClose } from "react-icons/io";
 import Swal from "sweetalert2";
 import "./Navbar.css"
+import useUserRole from "../../../CustomHooks/useUserRole";
 
 const Navbar = () => {
 
@@ -13,7 +14,7 @@ const Navbar = () => {
     const [rightDropdownOpen, setRightDropdownOpen] = useState(false);
     const leftDropdownRef = useRef(null);
     const rightDropdownRef = useRef(null);
-    const userRole = "user";
+    const { userRole } = useUserRole();
 
     const navLinks = <>
         <li onClick={() => setLeftDropdownOpen(!leftDropdownOpen)}><NavLink to="/">Home</NavLink></li>

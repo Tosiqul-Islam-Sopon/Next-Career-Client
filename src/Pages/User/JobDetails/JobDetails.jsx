@@ -1,6 +1,6 @@
 // src/components/JobDetails.js
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
 import { useContext } from "react";
 import { AuthContext } from "../../../Providers/AuthProvider";
@@ -10,6 +10,8 @@ const JobDetails = () => {
     const { jobId } = useParams();
     const { user } = useContext(AuthContext);
     const axiosBase = useAxiosBase();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const { data: job = null, isLoading } = useQuery({
         queryKey: [`job${jobId}`],
@@ -50,42 +52,63 @@ const JobDetails = () => {
     } = job;
 
     const handleApplyNow = async () => {
-        try {
-            // Check if the user has a resume uploaded
-            const response = await axiosBase.get(`/user/${userInfo._id}/has-resume`);
-            const hasResume = response.data.hasResume;
+        if (user) {
+            try {
+                // Check if the user has a resume uploaded
+                const response = await axiosBase.get(`/user/${userInfo._id}/has-resume`);
+                const hasResume = response.data.hasResume;
 
-            // Check if the user has completed their profile
-            if (hasResume && userInfo.personalInfo && userInfo.education) {
-                // Send a request to apply for the job
-                const applyResponse = await axiosBase.patch(`/jobs/apply`, {
-                    userId: userInfo._id,
-                    jobId: job._id,
-                });
+                // Check if the user has completed their profile
+                if (hasResume && userInfo.personalInfo && userInfo.education) {
+                    // Send a request to apply for the job
+                    const applyResponse = await axiosBase.patch(`/jobs/apply`, {
+                        userId: userInfo._id,
+                        jobId: job._id,
+                    });
 
-                if (applyResponse.status === 200) {
+                    if (applyResponse.status === 200) {
+                        Swal.fire({
+                            title: 'Success',
+                            text: 'You have successfully applied for the job!',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                } else {
                     Swal.fire({
-                        title: 'Success',
-                        text: 'You have successfully applied for the job!',
-                        icon: 'success',
+                        title: 'Incomplete Profile',
+                        text: 'Please upload your resume and complete your profile before applying.',
+                        icon: 'warning',
                         confirmButtonText: 'OK'
                     });
                 }
-            } else {
+            } catch (error) {
+                console.error('Error applying for job:', error);
                 Swal.fire({
-                    title: 'Incomplete Profile',
-                    text: 'Please upload your resume and complete your profile before applying.',
-                    icon: 'warning',
+                    title: 'Error',
+                    text: 'Failed to apply for the job',
+                    icon: 'error',
                     confirmButtonText: 'OK'
                 });
             }
-        } catch (error) {
-            console.error('Error applying for job:', error);
+        }
+        else{
             Swal.fire({
-                title: 'Error',
-                text: 'Failed to apply for the job',
-                icon: 'error',
-                confirmButtonText: 'OK'
+                title: 'Login Required',
+                text: 'You need to login to apply for a job.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                preConfirm: () => {
+                    navigate('/login', {
+                        state: { from: location }
+                    });
+                }
             });
         }
     };
