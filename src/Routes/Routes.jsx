@@ -20,6 +20,7 @@ import Resume from "../Pages/User/Profile/Resume/Resume";
 import AppliedJobs from "../Pages/User/AppliedJobs/AppliedJobs";
 import JobsByCategory from "../Pages/User/Home/Categories/JobsByCategory ";
 import UserPrivateRoute from "../PrivateRoutes/UserPrivateRoute";
+import MyPostedJobs from "../Pages/Recruiter/MyPostedJobs/MyPostedJobs";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +32,8 @@ const router = createBrowserRouter([
                 path: "/",
                 element: <Home></Home>
             },
+
+            // Authentication Routes
             {
                 path: "/login",
                 element: <Login></Login>
@@ -43,10 +46,8 @@ const router = createBrowserRouter([
                 path: "/recruiterRegistration",
                 element: <RecruiterRegistration></RecruiterRegistration>
             },
-            {
-                path: "/postJob",
-                element: <PrivateRoute><JobPostForm></JobPostForm></PrivateRoute>
-            },
+
+            // User Routes
             {
                 path: "/jobDetails/:jobId",
                 element: <JobDetails></JobDetails>
@@ -62,7 +63,18 @@ const router = createBrowserRouter([
             {
                 path: "/jobs/:category",
                 element: <JobsByCategory></JobsByCategory>
+            },
+
+            // Recruiter Routes
+            {
+                path: "/postJob",
+                element: <PrivateRoute><JobPostForm></JobPostForm></PrivateRoute>
+            },
+            {
+                path: "/myPostedJobs",
+                element: <PrivateRoute><MyPostedJobs></MyPostedJobs></PrivateRoute>
             }
+            
         ],
     },
     {

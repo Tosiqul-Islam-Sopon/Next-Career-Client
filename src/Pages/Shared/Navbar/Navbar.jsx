@@ -68,6 +68,7 @@ const Navbar = () => {
         setRightDropdownOpen(!rightDropdownOpen);
         logOut()
             .then(() => {
+                window.location.reload();
                 Swal.fire({
                     position: "center",
                     icon: "success",

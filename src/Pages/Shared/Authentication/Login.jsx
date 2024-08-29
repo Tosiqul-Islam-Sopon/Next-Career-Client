@@ -24,7 +24,7 @@ const Login = () => {
                 Swal.fire({
                     position: "center",
                     icon: "success",
-                    title: "Welcome to InnovateX",
+                    title: "Welcome to Next Career",
                     text: "Login Successfully",
                     showConfirmButton: false,
                     timer: 1500
@@ -49,7 +49,14 @@ const Login = () => {
                     role: "user"
                 }
                 axiosBase.post("/users", userInfo)
-                console.log(location);
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Welcome to Next Career",
+                    text: "Login Successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
                 navigate(location?.state?.from?.pathname || "/");
             })
             .catch(error => {
@@ -108,7 +115,7 @@ const Login = () => {
                     <div className="flex m-0 flex-col my-5 w-full justify-center items-center">
                         <p>New in Next Career?</p>
                         <div className="mt-3 space-y-3">
-                            <p>Find Job in Next Career?<Link state={location?.state} to="/register"> <span className="underline text-green-400">Sign Up as User</span></Link></p>
+                            <p>Find Job in Next Career?<Link state={location?.state} to="/register"> <span className="underline text-green-400">Sign Up as Job Seeker</span></Link></p>
                             <p>Find Talent in Next Career?<Link state={location?.state} to="/recruiterRegistration"> <span className="underline text-green-400">Sign Up as Recruiter</span></Link></p>
                         </div>
                     </div>

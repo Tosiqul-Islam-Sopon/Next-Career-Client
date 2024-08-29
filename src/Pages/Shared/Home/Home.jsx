@@ -4,6 +4,7 @@ import AboutUs from "../../User/Home/AboutUs/AboutUs";
 import BannerUser from "../../User/Home/BannerUser";
 import Categories from "../../User/Home/Categories/Categoris";
 import FeaturedJobs from "../../User/Home/FeaturedJobs/FeaturedJobs";
+import NewestJobs from "../../User/Home/Newest Jobs/NewestJobs";
 
 
 const Home = () => {
@@ -14,6 +15,7 @@ const Home = () => {
                 userRole === "recruiter" ? <BannerReq></BannerReq> : <BannerUser></BannerUser>
             }
             <FeaturedJobs></FeaturedJobs>
+            <NewestJobs></NewestJobs>
             <Categories></Categories>
             <AboutUs></AboutUs>
         </div>

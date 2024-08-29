@@ -7,7 +7,7 @@ const UserPrivateRoute = ({ children }) => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center mt-10">
+            <div className="flex justify-center items-center mt-28">
                 <div>
                     <span className="loading loading-ring loading-xs"></span>
                     <span className="loading loading-ring loading-sm"></span>
