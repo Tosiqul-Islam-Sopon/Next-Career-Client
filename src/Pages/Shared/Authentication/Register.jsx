@@ -183,8 +183,8 @@ const Registration = () => {
                 <div className="flex-1">
                     <img src={img} alt="" />
                 </div>
-                <div className="flex-1 card shrink-0 rounded-2xl bg-[#AACBFF] ">
-                    <form className="card-body" onSubmit={handleRegister}>
+                <div className="flex-1 card shrink-0 rounded-2xl bg-[#AACBFF] justify-center">
+                    <form className="px-10" onSubmit={handleRegister}>
                         <div className="form-control">
                             <label className="label">
                                 <span className="label-text">Name*</span>
@@ -224,7 +224,7 @@ const Registration = () => {
                         </div>
 
                         <div className="form-control mt-6">
-                            <button className="btn bg-[#007CFF] text-white text-xl font-medium border-none hover:bg-gray-600">Sign Up</button>
+                            <button className="btn bg-[#007CFF] text-white text-xl font-medium border-none hover:bg-gray-600">Register</button>
                         </div>
                     </form>
                     <div className="flex flex-col space-y-3 w-full justify-center items-center">

@@ -77,7 +77,7 @@ const Login = () => {
                 <div className="flex-1">
                     <img src={img} alt="" />
                 </div>
-                <div className="flex-1 card shrink-0 rounded-2xl bg-base-100">
+                <div className="flex-1 card shrink-0 rounded-2xl bg-base-100 justify-center">
 
                     <form className="p-5" onSubmit={handleLogin}>
                         <div className="form-control">
