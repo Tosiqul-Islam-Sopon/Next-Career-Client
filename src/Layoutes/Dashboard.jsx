@@ -1,6 +1,6 @@
 import { FaBriefcase, FaGraduationCap, FaHome, FaLocationArrow } from "react-icons/fa";
 import { NavLink, Outlet } from "react-router-dom";
-import { RiFileListFill } from "react-icons/ri";
+// import { RiFileListFill } from "react-icons/ri";
 import '../Pages/Shared/Navbar/Navbar.css'
 
 import { IoAddCircle, IoPersonCircle } from "react-icons/io5";
@@ -51,14 +51,14 @@ const Dashboard = () => {
                                             Experience
                                         </NavLink>
                                     </li>
-                                    <li >
+                                    {/* <li >
                                         <NavLink to="/dashboard/resume"
                                             className="border-2 border-orange-500 rounded-2xl hover:bg-orange-500 hover:text-white w-full"
                                         >
                                             <RiFileListFill />
                                             Resume
                                         </NavLink>
-                                    </li>
+                                    </li> */}
                                 </>
                                 :
                                 <>

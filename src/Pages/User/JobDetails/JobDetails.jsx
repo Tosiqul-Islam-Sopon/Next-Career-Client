@@ -29,7 +29,23 @@ const JobDetails = () => {
         }
     })
 
-    if (isLoading || userLoading) {
+    const { data: isApplied = null, isLoading: applicationCheckLoading, refetch: refetchApplicationStatus } = useQuery({
+        queryKey: ['job', jobId, userInfo],
+        queryFn: async () => {
+            const response = await axiosBase.get(`/jobs/checkApplication`, {
+                params: {
+                    jobId: jobId,
+                    userId: userInfo?._id
+                }
+            });
+            return response.data;
+        },
+        refetchOnWindowFocus: false,
+        enabled: !!jobId && !!userInfo?._id,  // Only run the query if jobId and userId are present
+    });
+    
+    
+    if (isLoading || userLoading || applicationCheckLoading) {
         return <div className="mt-36 text-center">Loading...</div>;
     }
 
@@ -55,13 +71,13 @@ const JobDetails = () => {
         if (user) {
             try {
                 // Check if the user has a resume uploaded
-                const response = await axiosBase.get(`/user/${userInfo._id}/has-resume`);
+                const response = await axiosBase.get(`/user/${userInfo._id}/hasResume`);
                 const hasResume = response.data.hasResume;
 
                 // Check if the user has completed their profile
                 if (hasResume && userInfo.personalInfo && userInfo.education) {
                     // Send a request to apply for the job
-                    const applyResponse = await axiosBase.patch(`/jobs/apply`, {
+                    const applyResponse = await axiosBase.post(`/jobs/apply`, {
                         userId: userInfo._id,
                         jobId: job._id,
                     });
@@ -71,6 +87,14 @@ const JobDetails = () => {
                             title: 'Success',
                             text: 'You have successfully applied for the job!',
                             icon: 'success',
+                            confirmButtonText: 'OK'
+                        });
+                        refetchApplicationStatus();
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Failed to apply for the job',
+                            icon: 'error',
                             confirmButtonText: 'OK'
                         });
                     }
@@ -163,12 +187,23 @@ const JobDetails = () => {
                 </div>
 
                 <div className="flex justify-center mt-8">
-                    <button
-                        onClick={handleApplyNow}
-                        className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300">
-                        Apply Now
-                    </button>
+                    {
+                        !isApplied ? (
+                            <button
+                                onClick={handleApplyNow}
+                                className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300">
+                                Apply Now
+                            </button>
+                        ) : (
+                            <button
+                                className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-600 transition duration-300 cursor-not-allowed"
+                                disabled>
+                                You already applied in this job
+                            </button>
+                        )
+                    }
                 </div>
+
             </div>
         </div>
     );

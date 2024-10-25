@@ -42,7 +42,7 @@ const MyPostedJobs = () => {
                         <p className="text-gray-600">Location: {job.jobLocation}</p>
                         <p className="text-gray-600">Vacancy: {job.vacancy}</p>
                         <p className="text-gray-600">Deadline: {new Date(job.deadline).toLocaleDateString()}</p>
-                        <Link>
+                        <Link to={`/seeApplicants/${job._id}`}>
                             <button className="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300">
                                 See applicants
                             </button>
