@@ -23,6 +23,8 @@ import UserPrivateRoute from "../PrivateRoutes/UserPrivateRoute";
 import MyPostedJobs from "../Pages/Recruiter/MyPostedJobs/MyPostedJobs";
 import SeeApplicants from "../Pages/Recruiter/MyPostedJobs/SeeApplicants";
 import Profile from "../Pages/Shared/Profile/Profile";
+import JobDetailsAndEdit from "../Pages/Recruiter/MyPostedJobs/JobDetailsAndEdit";
+import EditJob from "../Pages/Recruiter/MyPostedJobs/EditJob";
 
 const router = createBrowserRouter([
     {
@@ -83,6 +85,14 @@ const router = createBrowserRouter([
             {
                 path: "/seeApplicants/:jobId",
                 element: <PrivateRoute><SeeApplicants></SeeApplicants></PrivateRoute>
+            },
+            {
+                path: '/jobDetailsAndEdit/:jobId',
+                element: <PrivateRoute><JobDetailsAndEdit></JobDetailsAndEdit></PrivateRoute>
+            },
+            {
+                path: "/editJob/:jobId",
+                element: <PrivateRoute><EditJob></EditJob></PrivateRoute>
             }
             
         ],
