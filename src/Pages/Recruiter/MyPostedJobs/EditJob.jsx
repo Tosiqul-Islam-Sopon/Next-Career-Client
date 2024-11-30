@@ -7,8 +7,14 @@ const EditJob = () => {
   const { jobId } = useParams();
   const axiosBase = useAxiosBase();
   const navigate = useNavigate();
-  
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+  const {
+    handleSubmit,
+    register,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     const fetchJobData = async () => {
@@ -19,87 +25,117 @@ const EditJob = () => {
   }, [axiosBase, jobId, reset]);
 
   const onSubmit = async (data) => {
-    await axiosBase.put(`/jobs/job/${jobId}`, data);
-    navigate(`/job-details/${jobId}`);
+    console.log(data);
+    // await axiosBase.put(`/jobs/job/${jobId}`, data);
+    // navigate(`/job-details/${jobId}`);
   };
 
   const handleCancel = () => {
     navigate(`/job-details/${jobId}`);
   };
 
+  const companyWebsite = watch("companyInfo.website");
+  const companyName = watch("companyName");
+  const companyLogo = watch("companyLogo");
+
   return (
     <div className="mt-24 mb-8">
-      <form className="max-w-xl mx-auto p-8 border border-gray-300 rounded-lg bg-white shadow-md" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className="max-w-xl mx-auto p-8 border border-gray-300 rounded-lg bg-white shadow-md"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <h2 className="text-2xl font-bold mb-6 text-center">Edit Job</h2>
-        
+
         {/* Company Logo */}
-        {/* <div className="text-center mb-4">
+        <div className="text-center mb-4">
           <img src={companyLogo} alt="Company Logo" className="mx-auto h-24 w-24 rounded-full" />
           <h3 className="text-xl font-semibold mt-2">{companyName}</h3>
-        </div> */}
+        </div>
 
         {/* Fields start */}
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Company Website</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Company Website
+          </label>
           <input
             type="text"
             className="w-full p-2 border bg-gray-200 opacity-70 border-gray-300 rounded-md"
-            // value={website}
+            value={companyWebsite}
             disabled
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Job Title*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Job Title*
+          </label>
           <input
             type="text"
-            {...register('jobTitle', { required: true })}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            {...register("jobTitle", { required: true })}
+            className="w-full p-2 border bg-gray-200 opacity-70 border-gray-300 rounded-md"
+            disabled
           />
-          {errors.jobTitle && <span className="text-red-500">This field is required</span>}
         </div>
 
         <div className="mb-6">
-          <label className="block text-gray-700 font-bold mb-2">Recruitment Image*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Recruitment Image*
+          </label>
           <input
             type="file"
-            {...register('recruitmentImage', { required: true })}
+            {...register("recruitmentImage", { required: true })}
             className="file-input file-input-bordered file-input-primary w-full"
           />
-          {errors.recruitmentImage && <span className="text-red-500">This field is required</span>}
+          {errors.recruitmentImage && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Job Description*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Job Description*
+          </label>
           <textarea
-            {...register('jobDescription', { required: true })}
+            {...register("jobDescription", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           ></textarea>
-          {errors.jobDescription && <span className="text-red-500">This field is required</span>}
+          {errors.jobDescription && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Requirements*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Requirements*
+          </label>
           <textarea
-            {...register('jobRequirements', { required: true })}
+            {...register("jobRequirements", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           ></textarea>
-          {errors.jobRequirements && <span className="text-red-500">This field is required</span>}
+          {errors.jobRequirements && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Qualifications*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Qualifications*
+          </label>
           <textarea
-            {...register('jobQualifications', { required: true })}
+            {...register("jobQualifications", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           ></textarea>
-          {errors.jobQualifications && <span className="text-red-500">This field is required</span>}
+          {errors.jobQualifications && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Category*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Category*
+          </label>
           <select
-            {...register('jobCategory', { required: true })}
+            {...register("jobCategory", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           >
             <option value="Marketing">Marketing</option>
@@ -107,13 +143,17 @@ const EditJob = () => {
             <option value="Design">Design</option>
             <option value="SoftwareEngineer">Software Engineer</option>
           </select>
-          {errors.jobCategory && <span className="text-red-500">This field is required</span>}
+          {errors.jobCategory && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Job Type*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Job Type*
+          </label>
           <select
-            {...register('jobType', { required: true })}
+            {...register("jobType", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           >
             <option value="Full Time">Full Time</option>
@@ -121,27 +161,33 @@ const EditJob = () => {
             <option value="Contract">Contract</option>
             <option value="Intern">Intern</option>
           </select>
-          {errors.jobType && <span className="text-red-500">This field is required</span>}
+          {errors.jobType && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Job Location*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Job Location*
+          </label>
           <select
-            {...register('jobLocation', { required: true })}
+            {...register("jobLocation", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           >
             <option value="On Site">On Site</option>
             <option value="Remote">Remote</option>
             <option value="Hybrid">Hybrid</option>
           </select>
-          {errors.jobLocation && <span className="text-red-500">This field is required</span>}
+          {errors.jobLocation && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-2">Location</label>
           <input
             type="text"
-            {...register('onSitePlace')}
+            {...register("onSitePlace")}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -150,38 +196,53 @@ const EditJob = () => {
           <label className="block text-gray-700 font-bold mb-2">Salary*</label>
           <input
             type="number"
-            {...register('salary', { required: true })}
+            {...register("salary", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
-          {errors.salary && <span className="text-red-500">This field is required</span>}
+          {errors.salary && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-2">Vacancy*</label>
           <input
             type="number"
-            {...register('vacancy', { required: true })}
+            {...register("vacancy", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
-          {errors.vacancy && <span className="text-red-500">This field is required</span>}
+          {errors.vacancy && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Deadline*</label>
+          <label className="block text-gray-700 font-bold mb-2">
+            Deadline*
+          </label>
           <input
             type="date"
-            {...register('deadline', { required: true })}
+            {...register("deadline", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
-          {errors.deadline && <span className="text-red-500">This field is required</span>}
+          {errors.deadline && (
+            <span className="text-red-500">This field is required</span>
+          )}
         </div>
 
         {/* Buttons */}
         <div className="flex justify-between mt-6">
-          <button type="button" onClick={handleCancel} className="px-4 py-2 bg-gray-500 text-white font-bold rounded-md hover:bg-gray-600">
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="px-4 py-2 bg-gray-500 text-white font-bold rounded-md hover:bg-gray-600"
+          >
             Cancel
           </button>
-          <button type="submit" className="px-4 py-2 bg-green-500 text-white font-bold rounded-md hover:bg-green-600">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-green-500 text-white font-bold rounded-md hover:bg-green-600"
+          >
             Save
           </button>
         </div>

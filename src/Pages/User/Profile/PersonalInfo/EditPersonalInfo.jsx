@@ -19,7 +19,7 @@ const EditPersonalInfo = () => {
     const { data: userInfo = null, isLoading } = useQuery({
         queryKey: ['user', user?.email],
         queryFn: async () => {
-            const response = await axiosBase.get(`/user/${user?.email}`);
+            const response = await axiosBase.get(`/user-by-email/${user?.email}`);
             return response.data;
         }
     });
