@@ -25,6 +25,8 @@ import SeeApplicants from "../Pages/Recruiter/MyPostedJobs/SeeApplicants";
 import Profile from "../Pages/Shared/Profile/Profile";
 import JobDetailsAndEdit from "../Pages/Recruiter/MyPostedJobs/JobDetailsAndEdit";
 import EditJob from "../Pages/Recruiter/MyPostedJobs/EditJob";
+import RecruiterProfile from "../Pages/Recruiter/Profile/RecruiterProfile";
+import RecruiterProfileEdit from "../Pages/Recruiter/Profile/RecruiterProfileEdit";
 
 const router = createBrowserRouter([
     {
@@ -117,10 +119,16 @@ const router = createBrowserRouter([
                 path: "experience",
                 element: <UserPrivateRoute><Experience></Experience></UserPrivateRoute>
             },
-            // {
-            //     path: "resume",
-            //     element: <UserPrivateRoute><Resume></Resume></UserPrivateRoute>
-            // }
+            
+            // Recruiter Profile
+            {
+                path: "recruiterProfile",
+                element: <RecruiterProfile></RecruiterProfile>
+            },
+            {
+                path: "recruiterProfileEdit",
+                element: <RecruiterProfileEdit></RecruiterProfileEdit>
+            },
         ]   
     }
 ]);

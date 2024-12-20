@@ -1,7 +1,9 @@
 import axios from "axios";
 
+export const baseUrl = 'http://localhost:5000';
+
 const axiosBase = axios.create({
-    baseURL: 'http://localhost:5000',
+    baseURL: baseUrl,
 })
 
 const useAxiosBase = () => {
