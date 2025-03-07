@@ -27,7 +27,7 @@ const Jobs = () => {
                         sortCriteria,
                         jobType,
                         page,
-                        limit: 15
+                        limit: 16
                     }
                 });
                 setJobs(response.data.jobs);
@@ -48,32 +48,32 @@ const Jobs = () => {
     };
 
     if (isLoading) {
-        return <div className='mt-32 text-center text-5xl text-green-400'>Loading...</div>;
+        return <div className='mt-32 text-5xl text-center text-green-400'>Loading...</div>;
     }
 
     return (
         <div className="mt-24 mb-8">
-            <div className="flex justify-between items-center mb-4 px-10">
+            <div className="flex items-center justify-between px-10 mb-4">
                 <input
                     type="text"
                     placeholder="Search by Job Title"
                     value={searchTitle}
                     onChange={(e) => setSearchTitle(e.target.value)}
-                    className="border border-gray-300 rounded-md p-2 mr-2 w-full"
+                    className="w-full p-2 mr-2 border border-gray-300 rounded-md"
                 />
                 <input
                     type="text"
                     placeholder="Search by Company"
                     value={searchCompany}
                     onChange={(e) => setSearchCompany(e.target.value)}
-                    className="border border-gray-300 rounded-md p-2 mr-2 w-full"
+                    className="w-full p-2 mr-2 border border-gray-300 rounded-md"
                 />
             </div>
-            <div className='flex justify-between items-center mb-4 px-10'>
+            <div className='flex items-center justify-between px-10 mb-4'>
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="border border-gray-300 rounded-md p-2 mr-2 w-full"
+                    className="w-full p-2 mr-2 border border-gray-300 rounded-md"
                 >
                     <option value="">Filter by Category</option>
                     <option value="Marketing">Marketing</option>
@@ -96,7 +96,7 @@ const Jobs = () => {
                 <select
                     value={sortCriteria}
                     onChange={(e) => setSortCriteria(e.target.value)}
-                    className="border border-gray-300 rounded-md p-2 mr-2 w-full"
+                    className="w-full p-2 mr-2 border border-gray-300 rounded-md"
                 >
                     <option value="">Sort by</option>
                     <option value="Salary">Salary</option>
@@ -107,7 +107,7 @@ const Jobs = () => {
                 <select
                     value={jobType}
                     onChange={(e) => setJobType(e.target.value)}
-                    className="border border-gray-300 rounded-md p-2 w-full"
+                    className="w-full p-2 border border-gray-300 rounded-md"
                 >
                     <option value="">Filter by Job Type</option>
                     <option value="Remote">Remote</option>
@@ -117,7 +117,7 @@ const Jobs = () => {
                 </select>
             </div>
 
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-2 gap-4">
                 {jobs.map((job) => (
                     <JobCard key={job._id} job={job} />
                 ))}
@@ -127,7 +127,7 @@ const Jobs = () => {
                 <button
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
-                    className="px-4 py-2 mr-2 bg-gray-300 rounded-md"
+                    className={`px-4 py-2 mr-2 bg-gray-300 rounded-md hover:text-white ${page === 1 ? 'cursor-not-allowed' : ''}`}
                 >
                     Previous
                 </button>
@@ -135,7 +135,7 @@ const Jobs = () => {
                 <button
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
-                    className="px-4 py-2 ml-2 bg-gray-300 rounded-md"
+                    className={`px-4 py-2 ml-2 bg-gray-300 rounded-md hover:text-white ${page === totalPages ? 'cursor-not-allowed' : ''}`}
                 >
                     Next
                 </button>
