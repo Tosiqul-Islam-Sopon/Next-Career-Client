@@ -46,7 +46,7 @@ const JobDetails = () => {
     
     
     if (isLoading || userLoading || applicationCheckLoading) {
-        return <div className="mt-36 text-center">Loading...</div>;
+        return <div className="text-center mt-36">Loading...</div>;
     }
 
     // console.log(job);
@@ -61,7 +61,6 @@ const JobDetails = () => {
         jobLocation,
         salary,
         deadline,
-        recruitmentImageUrl,
         companyInfo,
         onSitePlace,
         vacancy
@@ -71,11 +70,11 @@ const JobDetails = () => {
         if (user) {
             try {
                 // Check if the user has a resume uploaded
-                const response = await axiosBase.get(`/user/${userInfo._id}/hasResume`);
-                const hasResume = response.data.hasResume;
+                // const response = await axiosBase.get(`/user/${userInfo._id}/hasResume`);
+                // const hasResume = response.data.hasResume;
 
                 // Check if the user has completed their profile
-                if (hasResume && userInfo.personalInfo && userInfo.education) {
+                if ( userInfo.personalInfo && userInfo.education) {
                     // Send a request to apply for the job
                     const applyResponse = await axiosBase.post(`/jobs/apply`, {
                         userId: userInfo._id,
@@ -139,45 +138,44 @@ const JobDetails = () => {
 
 
     return (
-        <div className="container mx-auto mt-28 mb-8 px-4 md:px-12">
-            <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="container px-4 mx-auto mb-8 mt-28 md:px-12">
+            <div className="p-6 bg-white rounded-lg shadow-md">
                 <div className="flex mb-6">
-                    <img src={recruitmentImageUrl} alt={jobTitle} className="w-24 h-24 rounded-lg shadow-md mr-6" />
                     <div>
-                        <h1 className="text-3xl font-bold mb-2">{jobTitle}</h1>
-                        <div className="text-gray-700 mb-4">
+                        <h1 className="mb-2 text-3xl font-bold">{jobTitle}</h1>
+                        <div className="mb-4 text-gray-700">
                             <span>{companyInfo?.companyName}</span> | <span>{jobLocation === "Remote" ? jobLocation : onSitePlace}</span>
                         </div>
-                        <div className="text-green-500 font-semibold">
+                        <div className="font-semibold text-green-500">
                             ৳{salary} / Month
                         </div>
                     </div>
                 </div>
 
                 <div className="mb-6">
-                    <h2 className="text-2xl font-semibold mb-3">Job Description</h2>
-                    <p className="text-gray-700 mb-4">
+                    <h2 className="mb-3 text-2xl font-semibold">Job Description</h2>
+                    <p className="mb-4 text-gray-700">
                         {jobDescription}
                     </p>
                 </div>
 
                 <div className="mb-6">
-                    <h2 className="text-2xl font-semibold mb-3">Requirements</h2>
-                    <p className="text-gray-700 mb-4">
+                    <h2 className="mb-3 text-2xl font-semibold">Requirements</h2>
+                    <p className="mb-4 text-gray-700">
                         {jobRequirements}
                     </p>
                 </div>
 
                 <div className="mb-6">
-                    <h2 className="text-2xl font-semibold mb-3">Qualifications</h2>
-                    <p className="text-gray-700 mb-4">
+                    <h2 className="mb-3 text-2xl font-semibold">Qualifications</h2>
+                    <p className="mb-4 text-gray-700">
                         {jobQualifications}
                     </p>
                 </div>
 
                 <div className="mb-6">
-                    <h2 className="text-2xl font-semibold mb-3">Job Details</h2>
-                    <ul className="list-disc list-inside text-gray-700 mb-4">
+                    <h2 className="mb-3 text-2xl font-semibold">Job Details</h2>
+                    <ul className="mb-4 text-gray-700 list-disc list-inside">
                         <li>Category: {jobCategory}</li>
                         <li>Type: {jobType}</li>
                         <li>Location: {jobLocation === "Remote" ? jobLocation : onSitePlace}</li>
@@ -191,12 +189,12 @@ const JobDetails = () => {
                         !isApplied ? (
                             <button
                                 onClick={handleApplyNow}
-                                className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-600 transition duration-300">
+                                className="px-4 py-2 font-semibold text-white transition duration-300 bg-green-500 rounded-lg shadow-md hover:bg-green-600">
                                 Apply Now
                             </button>
                         ) : (
                             <button
-                                className="bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-gray-600 transition duration-300 cursor-not-allowed"
+                                className="px-4 py-2 font-semibold text-white transition duration-300 bg-gray-500 rounded-lg shadow-md cursor-not-allowed hover:bg-gray-600"
                                 disabled>
                                 You already applied in this job
                             </button>

@@ -6,8 +6,8 @@ import useAxiosBase from "../../../CustomHooks/useAxiosBase";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const image_hosting_key = import.meta.env.VITE_IMAGE_UPLOAD_KEY_IMAGEBB;
-const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
+// const image_hosting_key = import.meta.env.VITE_IMAGE_UPLOAD_KEY_IMAGEBB;
+// const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 const JobPostForm = () => {
   const { user } = useContext(AuthContext);
@@ -30,7 +30,7 @@ const JobPostForm = () => {
 
   if (isLoading) {
     return (
-      <div className="mt-32 text-center text-5xl text-green-400">
+      <div className="mt-32 text-5xl text-center text-green-400">
         Loading...
       </div>
     );
@@ -38,32 +38,32 @@ const JobPostForm = () => {
 
   console.log({ user });
 
-  const { companyName, companyLogo, website } = userInfo;
+  const { _id: jobPosterId, companyName, companyLogo, website } = userInfo;
 
   const onSubmit = async (data) => {
     try {
-      const file = data.recruitmentImage[0];
+      // const file = data.recruitmentImage[0];
       // console.log('Selected file:', file);
-      if (!file) {
-        throw new Error("No file selected");
-      }
+      // if (!file) {
+      //   throw new Error("No file selected");
+      // }
 
-      const formData = new FormData();
-      formData.append("image", file);
+      // const formData = new FormData();
+      // formData.append("image", file);
 
-      const imgbbResponse = await fetch(image_hosting_api, {
-        method: "POST",
-        body: formData,
-      });
+      // const imgbbResponse = await fetch(image_hosting_api, {
+      //   method: "POST",
+      //   body: formData,
+      // });
 
-      if (!imgbbResponse.ok) {
-        const errorText = await imgbbResponse.text();
-        console.error("Error response:", errorText);
-        throw new Error("Failed to upload image");
-      }
+      // if (!imgbbResponse.ok) {
+      //   const errorText = await imgbbResponse.text();
+      //   console.error("Error response:", errorText);
+      //   throw new Error("Failed to upload image");
+      // }
 
-      const imgbbResult = await imgbbResponse.json();
-      const imageUrl = imgbbResult.data.url;
+      // const imgbbResult = await imgbbResponse.json();
+      // const imageUrl = imgbbResult.data.url;
 
       const companyInfo = {
         companyName,
@@ -79,14 +79,15 @@ const JobPostForm = () => {
 
       const jobData = {
         ...data,
-        recruitmentImageUrl: imageUrl,
+        // recruitmentImageUrl: imageUrl,
+        posterId: jobPosterId,
         companyInfo,
         userInfo,
         date: new Date().toISOString(),
         view: 0,
       };
 
-      delete jobData.recruitmentImage;
+      // delete jobData.recruitmentImage;
 
       axiosBase
         .post("/jobs", jobData)
@@ -120,34 +121,34 @@ const JobPostForm = () => {
   return (
     <div className="mt-24 mb-8">
       <form
-        className="max-w-xl mx-auto p-8 border border-gray-300 rounded-lg bg-white shadow-md"
+        className="max-w-xl p-8 mx-auto bg-white border border-gray-300 rounded-lg shadow-md"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Post a Job</h2>
+        <h2 className="mb-6 text-2xl font-bold text-center">Post a Job</h2>
 
-        <div className="text-center mb-4">
+        <div className="mb-4 text-center">
           <img
             src={companyLogo}
             alt="Company Logo"
-            className="mx-auto h-24 w-24 rounded-full"
+            className="w-24 h-24 mx-auto rounded-full"
           />
-          <h3 className="text-xl font-semibold mt-2">{companyName}</h3>
+          <h3 className="mt-2 text-xl font-semibold">{companyName}</h3>
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Company Website
           </label>
           <input
             type="text"
-            className="w-full p-2 border bg-gray-200 opacity-70 border-gray-300 rounded-md"
+            className="w-full p-2 bg-gray-200 border border-gray-300 rounded-md opacity-70"
             value={website}
             disabled
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Job Title*
           </label>
           <input
@@ -160,22 +161,22 @@ const JobPostForm = () => {
           )}
         </div>
 
-        <div className="mb-6">
-          <label className="block text-gray-700 font-bold mb-2">
+        {/* <div className="mb-6">
+          <label className="block mb-2 font-bold text-gray-700">
             Recruitment Image*
           </label>
           <input
             type="file"
             {...register("recruitmentImage", { required: true })}
-            className="file-input file-input-bordered file-input-primary w-full"
+            className="w-full file-input file-input-bordered file-input-primary"
           />
           {errors.recruitmentImage && (
             <span className="text-red-500">This field is required</span>
           )}
-        </div>
+        </div> */}
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Job Description*
           </label>
           <textarea
@@ -188,7 +189,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Requirements*
           </label>
           <textarea
@@ -201,7 +202,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Qualifications*
           </label>
           <textarea
@@ -214,7 +215,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Category*
           </label>
           <select
@@ -232,7 +233,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Job Type*
           </label>
           <select
@@ -250,7 +251,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Job Location*
           </label>
           <select
@@ -267,7 +268,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Location</label>
+          <label className="block mb-2 font-bold text-gray-700">Location</label>
           <input
             type="text"
             {...register("onSitePlace")}
@@ -276,7 +277,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Salary*</label>
+          <label className="block mb-2 font-bold text-gray-700">Salary*</label>
           <input
             type="number"
             {...register("salary", { required: true })}
@@ -288,7 +289,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">Vacancy*</label>
+          <label className="block mb-2 font-bold text-gray-700">Vacancy*</label>
           <input
             type="number"
             {...register("vacancy", { required: true })}
@@ -300,7 +301,7 @@ const JobPostForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-2">
+          <label className="block mb-2 font-bold text-gray-700">
             Deadline*
           </label>
           <input
@@ -315,7 +316,7 @@ const JobPostForm = () => {
 
         <button
           type="submit"
-          className="w-full py-2 bg-green-500 text-white font-bold rounded-md hover:bg-green-600"
+          className="w-full py-2 font-bold text-white bg-green-500 rounded-md hover:bg-green-600"
         >
           Submit
         </button>
