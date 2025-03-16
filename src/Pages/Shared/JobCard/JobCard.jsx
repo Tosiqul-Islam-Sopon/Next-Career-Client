@@ -26,7 +26,7 @@ const JobCard = ({ job }) => {
   const { companyName, companyLogo } = companyInfo;
   const axiosBase = useAxiosBase();
 
-  const [viewCount, setViewCount] = useState(view);
+  const [viewCount, setViewCount] = useState(view || 0);
 
   useEffect(() => {
     // Listen for updates

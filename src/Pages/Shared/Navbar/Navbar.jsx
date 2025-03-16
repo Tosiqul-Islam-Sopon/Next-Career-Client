@@ -5,6 +5,7 @@ import { IoMdClose } from "react-icons/io";
 import Swal from "sweetalert2";
 import "./Navbar.css";
 import useUserRole from "../../../CustomHooks/useUserRole";
+import iconNotification from "../../../assets/Icons/iconNotification.svg";
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -179,38 +180,49 @@ const Navbar = () => {
             : navLinksLgForUser}
         </ul>
         {user ? (
-          <div className="relative" ref={rightDropdownRef}>
-            <button onClick={toggleRightDropdown}>
+          <div className="flex gap-8 items-center">
+            <div className="flex items-center cursor-pointer">
               <img
-                src={user?.photoURL}
-                className="w-14 h-14 rounded-full"
-                alt={`${user?.displayName} pic`}
+                className="w-7 h-7 text-white"
+                style={{ filter: "invert(1)" }}
+                src={iconNotification}
+                alt="notifications"
               />
-            </button>
-            {rightDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
-                <div className="px-4 py-2 text-xl font-bold text-black border-y-2">
-                  {user?.displayName}
-                </div>
-                <Link
-                  to={`/dashboard/${userRole === "recruiter" ? "recruiterProfile" : "personalInfo"}`}
-                  className="block px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
-                  onClick={() => setRightDropdownOpen(false)}
-                >
-                  <button
-                    onClick={() => setRightDropdownOpen(!rightDropdownOpen)}
+              <p className="text-green-500 text-2xl font-light">(3)</p>
+            </div>
+            <div className="relative" ref={rightDropdownRef}>
+              <button onClick={toggleRightDropdown}>
+                <img
+                  src={user?.photoURL}
+                  className="w-14 h-14 rounded-full"
+                  alt={`${user?.displayName} pic`}
+                />
+              </button>
+              {rightDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
+                  <div className="px-4 py-2 text-xl font-bold text-black border-y-2">
+                    {user?.displayName}
+                  </div>
+                  <Link
+                    to={`/dashboard/${userRole === "recruiter" ? "recruiterProfile" : "personalInfo"}`}
+                    className="block px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
+                    onClick={() => setRightDropdownOpen(false)}
                   >
-                    Dashboard
+                    <button
+                      onClick={() => setRightDropdownOpen(!rightDropdownOpen)}
+                    >
+                      Dashboard
+                    </button>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
+                  >
+                    Logout
                   </button>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <button className="px-4 py-2 rounded-lg border border-white hover:border-none hover:bg-green-500">

@@ -36,8 +36,6 @@ const JobPostForm = () => {
     );
   }
 
-  console.log({ user });
-
   const { _id: jobPosterId, companyName, companyLogo, website } = userInfo;
 
   const onSubmit = async (data) => {
@@ -80,7 +78,7 @@ const JobPostForm = () => {
       const jobData = {
         ...data,
         // recruitmentImageUrl: imageUrl,
-        posterId: jobPosterId,
+        postedBy: jobPosterId,
         companyInfo,
         userInfo,
         date: new Date().toISOString(),
