@@ -16,7 +16,6 @@ const JobCard = ({ job }) => {
     jobTitle,
     salary,
     deadline,
-    appliedUsers,
     companyInfo,
     jobLocation,
     onSitePlace,
@@ -25,6 +24,9 @@ const JobCard = ({ job }) => {
   } = job;
   const { companyName, companyLogo } = companyInfo;
   const axiosBase = useAxiosBase();
+
+  const [totalApplicants, setTotalApplicants] = useState(0);
+  console.log({ totalApplicants });
 
   const [viewCount, setViewCount] = useState(view || 0);
 
@@ -42,6 +44,14 @@ const JobCard = ({ job }) => {
       socket.off("jobViewIncremented");
     };
   }, []);
+
+  useEffect(() => {
+    const loadTotalApplicants = async () => {
+      const response = await axiosBase.get(`/jobs/totalApplicants/${_id}`);
+      setTotalApplicants(response.data.totalApplicants);
+    };
+    loadTotalApplicants();
+  }, [axiosBase, _id]);
 
   const handleViewCount = async (jobId) => {
     try {
@@ -117,7 +127,7 @@ const JobCard = ({ job }) => {
             {/* 5. Applied */}
             <p className="flex items-center gap-2">
               <MdMan className="text-lg text-green-600" />
-              <span>Applied: {appliedUsers ? appliedUsers.length : "0"}</span>
+              <span>Applied: {totalApplicants}</span>
             </p>
 
             {/* 6. Deadline */}
