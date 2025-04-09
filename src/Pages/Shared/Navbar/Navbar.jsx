@@ -6,6 +6,12 @@ import Swal from "sweetalert2";
 import "./Navbar.css";
 import useUserRole from "../../../CustomHooks/useUserRole";
 import iconNotification from "../../../assets/Icons/iconNotification.svg";
+import Notifications from "../Notification/Notifications";
+import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
+import { useQuery } from "@tanstack/react-query";
+import { io } from "socket.io-client";
+
+const socket = io(baseUrl);
 
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
@@ -14,6 +20,50 @@ const Navbar = () => {
   const leftDropdownRef = useRef(null);
   const rightDropdownRef = useRef(null);
   const { userRole } = useUserRole();
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
+    useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  const axiosBase = useAxiosBase();
+
+  const { data: userInfo = null } = useQuery({
+    queryKey: ["user", user?.email],
+    queryFn: async () => {
+      const response = await axiosBase.get(`/user-by-email/${user?.email}`);
+      return response.data;
+    },
+  });
+
+  useEffect(() => {
+    // Register recruiter with their user ID
+    socket.emit("register", userInfo?._id);
+
+    // Listen for job application notifications
+    socket.on("jobApplication", (data) => {
+      alert(data.message);
+      setUnreadNotifications(unreadNotifications + 1);
+    });
+
+    return () => {
+      socket.off("jobApplication");
+    };
+  }, []);
+
+  const loadUnreadNotifications = async (userId) => {
+    const res = await axiosBase.get(`/notifications/unread/${userId}`);
+    return res.data.notifications;
+  };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      if (userInfo?._id) {
+        const loadedNotifications = await loadUnreadNotifications(userInfo._id);
+        setUnreadNotifications(loadedNotifications.length);
+      }
+    };
+
+    fetchNotifications();
+  }, [userInfo]);
 
   const navLinks = (
     <>
@@ -180,48 +230,64 @@ const Navbar = () => {
             : navLinksLgForUser}
         </ul>
         {user ? (
-          <div className="flex gap-8 items-center">
-            <div className="flex items-center cursor-pointer">
-              <img
-                className="w-7 h-7 text-white"
-                style={{ filter: "invert(1)" }}
-                src={iconNotification}
-                alt="notifications"
-              />
-              <p className="text-green-500 text-2xl font-light">(3)</p>
-            </div>
-            <div className="relative" ref={rightDropdownRef}>
-              <button onClick={toggleRightDropdown}>
-                <img
-                  src={user?.photoURL}
-                  className="w-14 h-14 rounded-full"
-                  alt={`${user?.displayName} pic`}
-                />
-              </button>
-              {rightDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
-                  <div className="px-4 py-2 text-xl font-bold text-black border-y-2">
-                    {user?.displayName}
-                  </div>
-                  <Link
-                    to={`/dashboard/${userRole === "recruiter" ? "recruiterProfile" : "personalInfo"}`}
-                    className="block px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
-                    onClick={() => setRightDropdownOpen(false)}
-                  >
-                    <button
-                      onClick={() => setRightDropdownOpen(!rightDropdownOpen)}
-                    >
-                      Dashboard
-                    </button>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
-                  >
-                    Logout
-                  </button>
+          <div>
+            <div className="flex gap-8 items-center">
+              <div className="relative">
+                <div
+                  onClick={() =>
+                    setIsNotificationDropdownOpen(!isNotificationDropdownOpen)
+                  }
+                  className="flex items-center cursor-pointer"
+                >
+                  <img
+                    className="w-7 h-7 text-white"
+                    style={{ filter: "invert(1)" }}
+                    src={iconNotification}
+                    alt="notifications"
+                  />
+                  <p className="text-green-500 text-2xl font-light">
+                    ({unreadNotifications})
+                  </p>
                 </div>
-              )}
+                {isNotificationDropdownOpen && (
+                  //<div className="">
+                  <Notifications />
+                  //</div>
+                )}
+              </div>
+              <div className="relative" ref={rightDropdownRef}>
+                <button onClick={toggleRightDropdown}>
+                  <img
+                    src={user?.photoURL}
+                    className="w-14 h-14 rounded-full"
+                    alt={`${user?.displayName} pic`}
+                  />
+                </button>
+                {rightDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-20">
+                    <div className="px-4 py-2 text-xl font-bold text-black border-y-2">
+                      {user?.displayName}
+                    </div>
+                    <Link
+                      to={`/dashboard/${userRole === "recruiter" ? "recruiterProfile" : "personalInfo"}`}
+                      className="block px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
+                      onClick={() => setRightDropdownOpen(false)}
+                    >
+                      <button
+                        onClick={() => setRightDropdownOpen(!rightDropdownOpen)}
+                      >
+                        Dashboard
+                      </button>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         ) : (

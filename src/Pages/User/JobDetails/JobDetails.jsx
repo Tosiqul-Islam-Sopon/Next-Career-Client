@@ -79,6 +79,8 @@ const JobDetails = () => {
                     const applyResponse = await axiosBase.post(`/jobs/apply`, {
                         userId: userInfo._id,
                         jobId: job._id,
+                        jobTitle,
+                        applicantName: user.displayName,
                     });
 
                     if (applyResponse.status === 200) {
@@ -100,7 +102,7 @@ const JobDetails = () => {
                 } else {
                     Swal.fire({
                         title: 'Incomplete Profile',
-                        text: 'Please upload your resume and complete your profile before applying.',
+                        text: 'Please complete your profile before applying.',
                         icon: 'warning',
                         confirmButtonText: 'OK'
                     });

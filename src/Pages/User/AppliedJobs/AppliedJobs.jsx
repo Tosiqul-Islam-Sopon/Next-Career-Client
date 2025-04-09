@@ -50,7 +50,7 @@ const AppliedJobs = () => {
 
   return (
     <div className="container mx-auto mt-28 mb-8 px-4 md:px-12">
-      <h2 className="text-2xl font-bold mb-6">Jobs You've Applied For</h2>
+      <h2 className="text-2xl font-bold mb-6">Jobs You&apos;ve Applied For</h2>
       {applications.length > 0 ? (
         applications.map((application) => {
           // Find the full job details from appliedJobs using jobId

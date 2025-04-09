@@ -26,7 +26,6 @@ const JobCard = ({ job }) => {
   const axiosBase = useAxiosBase();
 
   const [totalApplicants, setTotalApplicants] = useState(0);
-  console.log({ totalApplicants });
 
   const [viewCount, setViewCount] = useState(view || 0);
 
