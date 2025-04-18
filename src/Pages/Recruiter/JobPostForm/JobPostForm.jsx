@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../../../Providers/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
@@ -6,19 +6,17 @@ import useAxiosBase from "../../../CustomHooks/useAxiosBase";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-// const image_hosting_key = import.meta.env.VITE_IMAGE_UPLOAD_KEY_IMAGEBB;
-// const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
-
 const JobPostForm = () => {
   const { user } = useContext(AuthContext);
   const axiosBase = useAxiosBase();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm();
-  const navigate = useNavigate();
 
   const { data: userInfo = null, isLoading } = useQuery({
     queryKey: ["user", user?.email],
@@ -27,6 +25,20 @@ const JobPostForm = () => {
       return response.data;
     },
   });
+
+  // ✅ Fixed stages
+  const fixedFirstStage = "CV Screening";
+  const fixedLastStage = "Hire";
+
+  // ✅ Editable stages
+  const predefinedEditableStages = [
+    "Initial Interview",
+    "Technical Test",
+    "Technical Interview",
+    "HR Interview",
+  ];
+
+  const [selectedEditableStages, setSelectedEditableStages] = useState([]);
 
   if (isLoading) {
     return (
@@ -40,28 +52,21 @@ const JobPostForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      // const file = data.recruitmentImage[0];
-      // console.log('Selected file:', file);
-      // if (!file) {
-      //   throw new Error("No file selected");
-      // }
+      // ✅ Validate at least one middle stage selected
+      if (!selectedEditableStages.length) {
+        Swal.fire({
+          icon: "error",
+          title: "Please select at least one middle recruitment stage.",
+        });
+        return;
+      }
 
-      // const formData = new FormData();
-      // formData.append("image", file);
-
-      // const imgbbResponse = await fetch(image_hosting_api, {
-      //   method: "POST",
-      //   body: formData,
-      // });
-
-      // if (!imgbbResponse.ok) {
-      //   const errorText = await imgbbResponse.text();
-      //   console.error("Error response:", errorText);
-      //   throw new Error("Failed to upload image");
-      // }
-
-      // const imgbbResult = await imgbbResponse.json();
-      // const imageUrl = imgbbResult.data.url;
+      // ✅ Combine stages: first + selected + last
+      const combinedStages = [
+        fixedFirstStage,
+        ...selectedEditableStages,
+        fixedLastStage,
+      ];
 
       const companyInfo = {
         companyName,
@@ -77,42 +82,34 @@ const JobPostForm = () => {
 
       const jobData = {
         ...data,
-        // recruitmentImageUrl: imageUrl,
         postedBy: jobPosterId,
         companyInfo,
         userInfo,
         date: new Date().toISOString(),
         view: 0,
+        recruitmentStages: combinedStages,
       };
 
-      // delete jobData.recruitmentImage;
-
-      axiosBase
-        .post("/jobs", jobData)
-        .then((res) => {
-          if (res.data.insertedId) {
-            reset();
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "Job Posted Successfully",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            navigate("/");
-          }
-        })
-        .catch(() => {
-          Swal.fire({
-            position: "center",
-            icon: "error",
-            title: "Sorry!!! Something went wrong",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        });
+      await axiosBase.post("/jobs", jobData);
+      reset();
+      setSelectedEditableStages([]); // Reset stages after submit
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Job Posted Successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate("/");
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error("Error posting job:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Sorry! Something went wrong",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 
@@ -124,6 +121,7 @@ const JobPostForm = () => {
       >
         <h2 className="mb-6 text-2xl font-bold text-center">Post a Job</h2>
 
+        {/* Company Info */}
         <div className="mb-4 text-center">
           <img
             src={companyLogo}
@@ -133,6 +131,7 @@ const JobPostForm = () => {
           <h3 className="mt-2 text-xl font-semibold">{companyName}</h3>
         </div>
 
+        {/* Company Website */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Company Website
@@ -145,6 +144,7 @@ const JobPostForm = () => {
           />
         </div>
 
+        {/* Job Title */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Job Title*
@@ -159,20 +159,7 @@ const JobPostForm = () => {
           )}
         </div>
 
-        {/* <div className="mb-6">
-          <label className="block mb-2 font-bold text-gray-700">
-            Recruitment Image*
-          </label>
-          <input
-            type="file"
-            {...register("recruitmentImage", { required: true })}
-            className="w-full file-input file-input-bordered file-input-primary"
-          />
-          {errors.recruitmentImage && (
-            <span className="text-red-500">This field is required</span>
-          )}
-        </div> */}
-
+        {/* Job Description */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Job Description*
@@ -186,6 +173,7 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Requirements */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Requirements*
@@ -199,6 +187,7 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Qualifications */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Qualifications*
@@ -212,6 +201,7 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Category */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Category*
@@ -230,6 +220,7 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Job Type */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Job Type*
@@ -248,6 +239,7 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Job Location */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">
             Job Location*
@@ -265,6 +257,7 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Location Details */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">Location</label>
           <input
@@ -274,6 +267,7 @@ const JobPostForm = () => {
           />
         </div>
 
+        {/* Salary */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">Salary*</label>
           <input
@@ -281,11 +275,12 @@ const JobPostForm = () => {
             {...register("salary", { required: true })}
             className="w-full p-2 border border-gray-300 rounded-md"
           />
-          {errors.salaryRange && (
+          {errors.salary && (
             <span className="text-red-500">This field is required</span>
           )}
         </div>
 
+        {/* Vacancy */}
         <div className="mb-4">
           <label className="block mb-2 font-bold text-gray-700">Vacancy*</label>
           <input
@@ -298,10 +293,9 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Deadline */}
         <div className="mb-4">
-          <label className="block mb-2 font-bold text-gray-700">
-            Deadline*
-          </label>
+          <label className="block mb-2 font-bold text-gray-700">Deadline*</label>
           <input
             type="date"
             {...register("deadline", { required: true })}
@@ -312,6 +306,99 @@ const JobPostForm = () => {
           )}
         </div>
 
+        {/* Stages Selection */}
+        <div className="mb-4">
+          <label className="block mb-2 font-bold text-gray-700">
+            Recruitment Stages* (Select and arrange middle stages)
+          </label>
+
+          <div className="mb-2 text-green-700 font-semibold">
+            ✅ Fixed First Stage: {fixedFirstStage}
+          </div>
+
+          {/* Editable stages */}
+          <div className="space-y-2">
+            {predefinedEditableStages.map((stage) => (
+              <div key={stage} className="flex items-center">
+                <input
+                  type="checkbox"
+                  id={`stage-${stage}`}
+                  value={stage}
+                  checked={selectedEditableStages.includes(stage)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    const isChecked = e.target.checked;
+                    if (isChecked) {
+                      setSelectedEditableStages((prev) => [...prev, value]);
+                    } else {
+                      setSelectedEditableStages((prev) =>
+                        prev.filter((s) => s !== value)
+                      );
+                    }
+                  }}
+                  className="mr-2"
+                />
+                <label htmlFor={`stage-${stage}`} className="text-gray-700">
+                  {stage}
+                </label>
+              </div>
+            ))}
+          </div>
+
+          {/* Stage order controls */}
+          {selectedEditableStages.length > 0 && (
+            <ul className="mt-4 space-y-2">
+              {selectedEditableStages.map((stage, index) => (
+                <li
+                  key={stage}
+                  className="flex items-center justify-between bg-gray-100 p-2 rounded"
+                >
+                  <span>
+                    {index + 1}. {stage}
+                  </span>
+                  <div className="space-x-2">
+                    <button
+                      type="button"
+                      disabled={index === 0}
+                      onClick={() => {
+                        const newStages = [...selectedEditableStages];
+                        [newStages[index - 1], newStages[index]] = [
+                          newStages[index],
+                          newStages[index - 1],
+                        ];
+                        setSelectedEditableStages(newStages);
+                      }}
+                      className="px-2 py-1 text-sm bg-blue-500 text-white rounded disabled:opacity-50"
+                    >
+                      Up
+                    </button>
+                    <button
+                      type="button"
+                      disabled={index === selectedEditableStages.length - 1}
+                      onClick={() => {
+                        const newStages = [...selectedEditableStages];
+                        [newStages[index], newStages[index + 1]] = [
+                          newStages[index + 1],
+                          newStages[index],
+                        ];
+                        setSelectedEditableStages(newStages);
+                      }}
+                      className="px-2 py-1 text-sm bg-blue-500 text-white rounded disabled:opacity-50"
+                    >
+                      Down
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <div className="mt-4 text-green-700 font-semibold">
+            ✅ Fixed Last Stage: {fixedLastStage}
+          </div>
+        </div>
+
+        {/* Submit */}
         <button
           type="submit"
           className="w-full py-2 font-bold text-white bg-green-500 rounded-md hover:bg-green-600"

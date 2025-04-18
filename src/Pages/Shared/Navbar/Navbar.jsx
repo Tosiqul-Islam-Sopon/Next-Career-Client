@@ -10,6 +10,7 @@ import Notifications from "../Notification/Notifications";
 import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
 import { useQuery } from "@tanstack/react-query";
 import { io } from "socket.io-client";
+import { toast } from "react-toastify";
 
 const socket = io(baseUrl);
 
@@ -39,8 +40,23 @@ const Navbar = () => {
     socket.emit("register", userInfo?._id);
 
     // Listen for job application notifications
+    socket.on("stageProgress", (data) => {
+      toast.success(data.message);
+      setUnreadNotifications(unreadNotifications + 1);
+    });
+
+    return () => {
+      socket.off("stageProgress");
+    };
+  }, []);
+
+  useEffect(() => {
+    // Register recruiter with their user ID
+    socket.emit("register", userInfo?._id);
+
+    // Listen for job application notifications
     socket.on("jobApplication", (data) => {
-      alert(data.message);
+      toast.success(data.message);
       setUnreadNotifications(unreadNotifications + 1);
     });
 
@@ -174,7 +190,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="navbar bg-gray-800 text-white fixed z-10">
+    <div className="navbar bg-gray-800 text-white fixed z-50">
       <div className="navbar-start lg:hidden">
         <div className="dropdown" ref={leftDropdownRef}>
           <div
