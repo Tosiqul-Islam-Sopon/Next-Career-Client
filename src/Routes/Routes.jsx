@@ -27,6 +27,7 @@ import JobDetailsAndEdit from "../Pages/Recruiter/MyPostedJobs/JobDetailsAndEdit
 import EditJob from "../Pages/Recruiter/MyPostedJobs/EditJob";
 import RecruiterProfile from "../Pages/Recruiter/Profile/RecruiterProfile";
 import RecruiterProfileEdit from "../Pages/Recruiter/Profile/RecruiterProfileEdit";
+import AdminHome from "../Pages/Admin/Home";
 
 const router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path: "/",
                 element: <Home></Home>
+            },
+            {
+                path: "/adminHome",
+                element: <AdminHome></AdminHome>
             },
 
             // Authentication Routes

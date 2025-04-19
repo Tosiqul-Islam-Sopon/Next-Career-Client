@@ -6,21 +6,36 @@ import { FcGoogle } from "react-icons/fc";
 import { AuthContext } from "../../../Providers/AuthProvider";
 import Swal from "sweetalert2";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import { adminCredentials } from "../../../Constants/adminCredentials";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { logIn, googleSignIn } = useContext(AuthContext);
+  const { logIn, googleSignIn, setCustomUser } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const axiosBase = useAxiosBase();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
+  const isValidAdmin = (email, password) =>
+    adminCredentials.some(
+      (admin) => admin.email === email && admin.password === password
+    );
+
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
     const email = e.target.email.value;
     const password = e.target.password.value;
+    const isAdmin = isValidAdmin(email, password);
+    if (isAdmin) {
+      setCustomUser({
+        email,
+        displayName: "Admin",
+      });
+      navigate("/adminHome");
+      return;
+    }
 
     logIn(email, password)
       .then(() => {
@@ -166,7 +181,9 @@ const Login = () => {
               <p>
                 Find Job in Next Career?
                 <Link state={location?.state} to="/register">
-                  <span className={`underline text-green-400 ${isLoading || isGoogleLoading ? 'cursor-wait' : ''}`}>
+                  <span
+                    className={`underline text-green-400 ${isLoading || isGoogleLoading ? "cursor-wait" : ""}`}
+                  >
                     {isLoading || isGoogleLoading ? (
                       <span className="animate-pulse">Loading...</span>
                     ) : (
@@ -178,7 +195,9 @@ const Login = () => {
               <p>
                 Find Talent in Next Career?
                 <Link state={location?.state} to="/recruiterRegistration">
-                  <span className={`underline text-green-400 ${isLoading || isGoogleLoading ? 'cursor-wait' : ''}`}>
+                  <span
+                    className={`underline text-green-400 ${isLoading || isGoogleLoading ? "cursor-wait" : ""}`}
+                  >
                     {isLoading || isGoogleLoading ? (
                       <span className="animate-pulse">Loading...</span>
                     ) : (
