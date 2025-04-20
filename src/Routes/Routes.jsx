@@ -28,6 +28,9 @@ import EditJob from "../Pages/Recruiter/MyPostedJobs/EditJob";
 import RecruiterProfile from "../Pages/Recruiter/Profile/RecruiterProfile";
 import RecruiterProfileEdit from "../Pages/Recruiter/Profile/RecruiterProfileEdit";
 import AdminHome from "../Pages/Admin/Home";
+import TopRecruitingCompanies from "../Pages/Admin/TopRecruitingCompanies";
+import TopRecruitingSectors from "../Pages/Admin/TopRecruitingSectors";
+import CategoryWiseReport from "../Pages/Admin/CategoryWiseReport";
 
 const router = createBrowserRouter([
     {
@@ -42,6 +45,18 @@ const router = createBrowserRouter([
             {
                 path: "/adminHome",
                 element: <AdminHome></AdminHome>
+            },
+            {
+                path: "/admin/topCompanies",
+                element: <TopRecruitingCompanies></TopRecruitingCompanies>
+            },
+            {
+                path: "/admin/topSectors",
+                element: <TopRecruitingSectors></TopRecruitingSectors>
+            },
+            {
+                path: "/admin/categoryWiseReport",
+                element: <CategoryWiseReport></CategoryWiseReport>
             },
 
             // Authentication Routes
