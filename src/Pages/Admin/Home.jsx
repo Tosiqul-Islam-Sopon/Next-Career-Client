@@ -1,12 +1,33 @@
 "use client"
 
-import { useContext } from "react"
-import { FaChartBar, FaBuilding, FaTags, FaSignOutAlt, FaUserTie, FaBell, FaCog, FaSearch } from "react-icons/fa"
+import { useContext, useEffect, useState } from "react"
+import { FaChartBar, FaBuilding, FaTags, FaSignOutAlt, FaUserTie } from "react-icons/fa"
 import { AuthContext } from "../../Providers/AuthProvider"
 import { Link } from "react-router-dom"
+import useAxiosBase from "../../CustomHooks/useAxiosBase"
 
 const AdminHome = () => {
   const { setCustomUser } = useContext(AuthContext)
+  const [stats, setStats] = useState({
+    totalJobs: 0,
+    activeRecruiters: 0,
+    jobSeekers: 0,
+    placements: 0
+  });
+  const axiosBase = useAxiosBase();
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await axiosBase.get('/admin/dashboardStats');
+        setStats(response.data);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -28,7 +49,7 @@ const AdminHome = () => {
               <span className="text-2xl font-bold text-blue-700">NextCareer</span>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="relative">
+              {/* <div className="relative">
                 <input
                   type="text"
                   placeholder="Search..."
@@ -38,10 +59,10 @@ const AdminHome = () => {
               </div>
               <button className="p-2 rounded-full text-gray-500 hover:bg-gray-100">
                 <FaBell className="text-lg" />
-              </button>
-              <button className="p-2 rounded-full text-gray-500 hover:bg-gray-100">
+              </button> */}
+              {/* <button className="p-2 rounded-full text-gray-500 hover:bg-gray-100">
                 <FaCog className="text-lg" />
-              </button>
+              </button> */}
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white">
                   <FaUserTie />
@@ -72,10 +93,10 @@ const AdminHome = () => {
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
           {[
-            { label: "Total Jobs", value: "1,254", change: "+12%", color: "bg-blue-500" },
-            { label: "Active Recruiters", value: "342", change: "+5%", color: "bg-green-500" },
-            { label: "Job Seekers", value: "8,761", change: "+18%", color: "bg-purple-500" },
-            { label: "Placements", value: "426", change: "+7%", color: "bg-amber-500" },
+            { label: "Total Jobs", value: stats.totalJobs, change: "+12%", color: "bg-blue-500" },
+            { label: "Active Recruiters", value: stats.activeRecruiters, change: "+5%", color: "bg-green-500" },
+            { label: "Job Seekers", value: stats.jobSeekers, change: "+18%", color: "bg-purple-500" },
+            { label: "Placements", value: stats.placements, change: "+7%", color: "bg-amber-500" },
           ].map((stat, index) => (
             <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
               <div className="flex items-center">
@@ -88,7 +109,7 @@ const AdminHome = () => {
                   <p className="text-sm font-medium text-gray-500">{stat.label}</p>
                   <div className="flex items-baseline">
                     <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
-                    <span className="ml-2 text-xs font-medium text-green-600">{stat.change}</span>
+                    {/* <span className="ml-2 text-xs font-medium text-green-600">{stat.change}</span> */}
                   </div>
                 </div>
               </div>
@@ -132,7 +153,7 @@ const AdminHome = () => {
                   <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center mr-3">
                     <FaBuilding className="text-green-600" />
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Top 5 Recruiting Companies</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">Top 5 Hiring Companies</h2>
                 </div>
                 <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">Companies</span>
               </div>
