@@ -37,11 +37,6 @@ const AuthProvider = ({ children }) => {
     return signInWithEmailAndPassword(auth, email, pass);
   };
 
-  const setCustomUser = (customUser) => {
-    setUser(customUser);
-    localStorage.setItem("adminUser", JSON.stringify(customUser));
-  };
-
   const googleSignIn = () => {
     setLoading(true);
     return signInWithPopup(auth, googleProvider);
@@ -53,12 +48,6 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const storedAdmin = localStorage.getItem("adminUser");
-    if (storedAdmin) {
-      setUser(JSON.parse(storedAdmin));
-      setLoading(false);
-      return; // 🔁 skip Firebase listener if admin
-    }
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       // if (currentUser){
@@ -89,7 +78,6 @@ const AuthProvider = ({ children }) => {
     logIn,
     googleSignIn,
     logOut,
-    setCustomUser,
   };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>

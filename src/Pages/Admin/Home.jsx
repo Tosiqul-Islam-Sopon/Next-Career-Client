@@ -1,28 +1,39 @@
-"use client"
+"use client";
 
-import { useContext, useEffect, useState } from "react"
-import { FaChartBar, FaBuilding, FaTags, FaSignOutAlt, FaUserTie } from "react-icons/fa"
-import { AuthContext } from "../../Providers/AuthProvider"
-import { Link } from "react-router-dom"
-import useAxiosBase from "../../CustomHooks/useAxiosBase"
+import { useContext, useEffect, useState } from "react";
+import {
+  FaChartBar,
+  FaBuilding,
+  FaTags,
+  FaSignOutAlt,
+  FaUserTie,
+} from "react-icons/fa";
+import { AuthContext } from "../../Providers/AuthProvider";
+import { Link } from "react-router-dom";
+import useAxiosBase from "../../CustomHooks/useAxiosBase";
+import Swal from "sweetalert2";
 
 const AdminHome = () => {
-  const { setCustomUser } = useContext(AuthContext)
+  const { logOut } = useContext(AuthContext);
   const [stats, setStats] = useState({
     totalJobs: 0,
     activeRecruiters: 0,
     jobSeekers: 0,
-    placements: 0
+    placements: 0,
   });
   const axiosBase = useAxiosBase();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axiosBase.get('/admin/dashboardStats');
+        setLoading(true);
+        const response = await axiosBase.get("/admin/dashboardStats");
         setStats(response.data);
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        setLoading(false);
+        console.error("Error fetching stats:", error);
       }
     };
 
@@ -30,13 +41,28 @@ const AdminHome = () => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      localStorage.removeItem("adminUser")
-      setCustomUser(null)
-      window.location.href = "/login"
-    } catch (err) {
-      console.error("Logout error:", err)
-    }
+    logOut()
+      .then(() => {
+        window.location.reload();
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Log Out Successful",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      })
+      .catch((error) => {
+        Swal.fire({
+          title: "OPPS!!!",
+          text: `${error.message}`,
+          icon: "error",
+        });
+      });
+  };
+
+  if (loading) {
+    return <div className="mt-20 w-fit mx-auto">Loading............</div>;
   }
 
   return (
@@ -46,7 +72,9 @@ const AdminHome = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-blue-700">NextCareer</span>
+              <span className="text-2xl font-bold text-blue-700">
+                NextCareer
+              </span>
             </div>
             <div className="flex items-center space-x-4">
               {/* <div className="relative">
@@ -87,18 +115,44 @@ const AdminHome = () => {
         {/* Dashboard Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-600">Welcome back! Here&apos;s an overview of your platform&apos;s performance.</p>
+          <p className="mt-1 text-sm text-gray-600">
+            Welcome back! Here&apos;s an overview of your platform&apos;s
+            performance.
+          </p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
           {[
-            { label: "Total Jobs", value: stats.totalJobs, change: "+12%", color: "bg-blue-500" },
-            { label: "Active Recruiters", value: stats.activeRecruiters, change: "+5%", color: "bg-green-500" },
-            { label: "Job Seekers", value: stats.jobSeekers, change: "+18%", color: "bg-purple-500" },
-            { label: "Placements", value: stats.placements, change: "+7%", color: "bg-amber-500" },
+            {
+              label: "Total Jobs",
+              value: stats.totalJobs,
+              change: "+12%",
+              color: "bg-blue-500",
+            },
+            {
+              label: "Active Recruiters",
+              value: stats.activeRecruiters,
+              change: "+5%",
+              color: "bg-green-500",
+            },
+            {
+              label: "Job Seekers",
+              value: stats.jobSeekers,
+              change: "+18%",
+              color: "bg-purple-500",
+            },
+            {
+              label: "Placements",
+              value: stats.placements,
+              change: "+7%",
+              color: "bg-amber-500",
+            },
           ].map((stat, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+            <div
+              key={index}
+              className="bg-white rounded-lg shadow-sm border border-gray-100 p-6"
+            >
               <div className="flex items-center">
                 <div
                   className={`w-12 h-12 rounded-lg ${stat.color} bg-opacity-15 flex items-center justify-center mr-4`}
@@ -106,9 +160,13 @@ const AdminHome = () => {
                   <div className={`w-3 h-3 rounded-full ${stat.color}`}></div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">{stat.label}</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    {stat.label}
+                  </p>
                   <div className="flex items-baseline">
-                    <p className="text-2xl font-semibold text-gray-900">{stat.value}</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {stat.value}
+                    </p>
                     {/* <span className="ml-2 text-xs font-medium text-green-600">{stat.change}</span> */}
                   </div>
                 </div>
@@ -127,18 +185,35 @@ const AdminHome = () => {
                   <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center mr-3">
                     <FaTags className="text-blue-600" />
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Category-wise Report</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Category-wise Report
+                  </h2>
                 </div>
-                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Analytics</span>
+                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                  Analytics
+                </span>
               </div>
               <p className="text-sm text-gray-600 mb-4">
-                Comprehensive breakdown of job categories and their performance metrics across the platform.
+                Comprehensive breakdown of job categories and their performance
+                metrics across the platform.
               </p>
               <div className="mt-2 flex justify-between items-center">
-                <span className="text-sm font-medium text-blue-600 group-hover:underline">View Report</span>
+                <span className="text-sm font-medium text-blue-600 group-hover:underline">
+                  View Report
+                </span>
                 <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                  <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -153,18 +228,35 @@ const AdminHome = () => {
                   <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center mr-3">
                     <FaBuilding className="text-green-600" />
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Top 5 Hiring Companies</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Top 5 Hiring Companies
+                  </h2>
                 </div>
-                <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">Companies</span>
+                <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                  Companies
+                </span>
               </div>
               <p className="text-sm text-gray-600 mb-4">
-                Identify the most active companies on the platform and their recruitment patterns.
+                Identify the most active companies on the platform and their
+                recruitment patterns.
               </p>
               <div className="mt-2 flex justify-between items-center">
-                <span className="text-sm font-medium text-green-600 group-hover:underline">View Top Companies</span>
+                <span className="text-sm font-medium text-green-600 group-hover:underline">
+                  View Top Companies
+                </span>
                 <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
-                  <svg className="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4 text-green-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -179,18 +271,35 @@ const AdminHome = () => {
                   <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center mr-3">
                     <FaChartBar className="text-purple-600" />
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Top 5 Recruiting Sectors</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Top 5 Recruiting Sectors
+                  </h2>
                 </div>
-                <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">Sectors</span>
+                <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+                  Sectors
+                </span>
               </div>
               <p className="text-sm text-gray-600 mb-4">
-                Analyze trending industry sectors and their hiring volumes across the platform.
+                Analyze trending industry sectors and their hiring volumes
+                across the platform.
               </p>
               <div className="mt-2 flex justify-between items-center">
-                <span className="text-sm font-medium text-purple-600 group-hover:underline">View Top Sectors</span>
+                <span className="text-sm font-medium text-purple-600 group-hover:underline">
+                  View Top Sectors
+                </span>
                 <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
-                  <svg className="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4 text-purple-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -199,7 +308,7 @@ const AdminHome = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminHome
+export default AdminHome;

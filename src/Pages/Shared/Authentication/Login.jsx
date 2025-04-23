@@ -6,36 +6,35 @@ import { FcGoogle } from "react-icons/fc";
 import { AuthContext } from "../../../Providers/AuthProvider";
 import Swal from "sweetalert2";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
-import { adminCredentials } from "../../../Constants/adminCredentials";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { logIn, googleSignIn, setCustomUser } = useContext(AuthContext);
+  const { logIn, googleSignIn } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const axiosBase = useAxiosBase();
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const isValidAdmin = (email, password) =>
-    adminCredentials.some(
-      (admin) => admin.email === email && admin.password === password
-    );
+  // const isValidAdmin = (email, password) =>
+  //   adminCredentials.some(
+  //     (admin) => admin.email === email && admin.password === password
+  //   );
 
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
     const email = e.target.email.value;
     const password = e.target.password.value;
-    const isAdmin = isValidAdmin(email, password);
-    if (isAdmin) {
-      setCustomUser({
-        email,
-        displayName: "Admin",
-      });
-      navigate("/adminHome");
-      return;
-    }
+    // const isAdmin = isValidAdmin(email, password);
+    // if (isAdmin) {
+    //   setCustomUser({
+    //     email,
+    //     displayName: "Admin",
+    //   });
+    //   navigate("/adminHome");
+    //   return;
+    // }
 
     logIn(email, password)
       .then(() => {

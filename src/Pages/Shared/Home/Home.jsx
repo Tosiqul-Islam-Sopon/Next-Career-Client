@@ -10,8 +10,8 @@ import NewestJobs from "../../User/Home/Newest Jobs/NewestJobs";
 const Home = () => {
   const { userRole, loading } = useUserRole();
 
-  if (loading){
-    return <div>Loading...........</div>
+  if (loading) {
+    return <div>Loading...........</div>;
   }
 
   return (
