@@ -29,6 +29,7 @@ import AdminHome from "../Pages/Admin/Home";
 import TopRecruitingCompanies from "../Pages/Admin/TopRecruitingCompanies";
 import TopRecruitingSectors from "../Pages/Admin/TopRecruitingSectors";
 import CategoryWiseReport from "../Pages/Admin/CategoryWiseReport";
+import Schedules from "../Pages/Shared/Schedules/Schedules";
 
 const router = createBrowserRouter([
   {
@@ -135,6 +136,14 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <EditJob></EditJob>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/schedules/:userId",
+        element: (
+          <PrivateRoute>
+            <Schedules></Schedules>
           </PrivateRoute>
         ),
       },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "react-router-dom";
@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import RecruitmentProgressBar from "../../Recruiter/MyPostedJobs/RecruitmentProgressBar";
 import Swal from "sweetalert2";
+import { AuthContext } from "../../../Providers/AuthProvider";
 
 // Add these animation styles
 const animationStyles = `
@@ -51,6 +52,7 @@ const animationStyles = `
 `;
 
 const UserProfile = () => {
+  const { user } = useContext(AuthContext);
   const { userId } = useParams();
   const location = useLocation();
   const jobId = location.state?.jobId;
@@ -58,6 +60,14 @@ const UserProfile = () => {
   const [activeTab, setActiveTab] = useState("resume");
   const [notes, setNotes] = useState("");
   const [showHireConfirmation, setShowHireConfirmation] = useState(false);
+
+  const { data: recruiterInfo = null, isRecruiterLoading } = useQuery({
+    queryKey: ["user", user?.email],
+    queryFn: async () => {
+      const response = await axiosBase.get(`/user-by-email/${user?.email}`);
+      return response.data;
+    },
+  });
 
   const { data: userInfo = null, isLoading } = useQuery({
     queryKey: ["user", userId],
@@ -200,6 +210,7 @@ const UserProfile = () => {
 
       await axiosBase.post("/job/schedule", {
         jobId: jobId,
+        recruiterId: recruiterInfo?._id,
         candidateId: userId,
         stageName: nextStage,
         scheduledDate: selectedDate,
@@ -236,7 +247,7 @@ const UserProfile = () => {
     }
   };
 
-  if (isLoading || jobLoading) {
+  if (isLoading || jobLoading || isRecruiterLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center">

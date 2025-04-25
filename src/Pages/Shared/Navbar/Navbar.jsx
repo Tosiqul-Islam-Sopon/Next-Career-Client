@@ -111,6 +111,14 @@ const Navbar = () => {
           Applied Jobs
         </NavLink>
       </li>
+      <li>
+        <NavLink
+          className={"hover:bg-green-400 "}
+          to={`/schedules/${userInfo?._id}`}
+        >
+          Schedules
+        </NavLink>
+      </li>
     </>
   );
 
@@ -129,6 +137,14 @@ const Navbar = () => {
       <li>
         <NavLink className={"hover:bg-green-400 "} to="/postJob">
           Post A Job
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          className={"hover:bg-green-400 "}
+          to={`/schedules/${userInfo?._id}`}
+        >
+          Schedules
         </NavLink>
       </li>
     </>

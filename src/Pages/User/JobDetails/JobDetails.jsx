@@ -2,7 +2,7 @@
 
 // src/components/JobDetails.js
 import { useQuery } from "@tanstack/react-query";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
 import { useContext } from "react";
 import { AuthContext } from "../../../Providers/AuthProvider";
@@ -20,10 +20,12 @@ import {
   MdShare,
   MdCheck,
 } from "react-icons/md";
+import useUserRole from "../../../CustomHooks/useUserRole";
 
 const JobDetails = () => {
   const { jobId } = useParams();
   const { user } = useContext(AuthContext);
+  const { userRole } = useUserRole();
   const axiosBase = useAxiosBase();
   const navigate = useNavigate();
   const location = useLocation();
@@ -111,6 +113,7 @@ const JobDetails = () => {
     companyInfo,
     onSitePlace,
     vacancy,
+    userInfo: jobPosterInfo,
   } = job;
 
   // Format salary with commas
@@ -394,45 +397,6 @@ const JobDetails = () => {
                       </div>
                     </div>
                   )}
-
-                  {/* Apply button */}
-                  { !isApplied?.hasApplied ? (
-                    <button
-                      onClick={handleApplyNow}
-                      className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center justify-center"
-                    >
-                      Apply Now
-                    </button>
-                  ) : isApplied && isApplied.hasSchedule ? (
-                    <div className="bg-indigo-50 border border-indigo-200 rounded-md p-4 text-sm text-indigo-900">
-                      <p className="font-semibold text-indigo-700 mb-2 flex items-center">
-                        <MdCalendarToday className="mr-2 text-indigo-600" />
-                        Scheduled Interview
-                      </p>
-                      <div className="text-sm text-gray-800 space-y-1">
-                        <p>
-                          <strong>Stage:</strong> {isApplied.schedule.stageName}
-                        </p>
-                        <p>
-                          <strong>Date:</strong>{" "}
-                          {isApplied.schedule.scheduledDate}
-                        </p>
-                        <p>
-                          <strong>Time:</strong> {isApplied.schedule.startTime}{" "}
-                          - {isApplied.schedule.endTime}
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-green-50 border border-green-100 rounded-md p-4 text-center">
-                      <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-600 mb-2">
-                        <MdCheck className="w-6 h-6" />
-                      </div>
-                      <p className="text-green-800 font-medium text-sm">
-                        Application Submitted
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -478,6 +442,83 @@ const JobDetails = () => {
                   </div>
                 </div>
               )}
+
+              <div className="mt-5">
+                {userRole === "user" ? (
+                  <>
+                    {/* Apply button */}
+                    {!isApplied?.hasApplied ? (
+                      <button
+                        onClick={handleApplyNow}
+                        className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center justify-center"
+                      >
+                        Apply Now
+                      </button>
+                    ) : isApplied && isApplied.hasSchedule ? (
+                      <div className="bg-indigo-50 border border-indigo-200 rounded-md p-4 text-sm text-indigo-900">
+                        <p className="font-semibold text-indigo-700 mb-2 flex items-center">
+                          <MdCalendarToday className="mr-2 text-indigo-600" />
+                          Scheduled Interview
+                        </p>
+                        <div className="text-sm text-gray-800 space-y-1">
+                          <p>
+                            <strong>Stage:</strong>{" "}
+                            {isApplied.schedule.stageName}
+                          </p>
+                          <p>
+                            <strong>Date:</strong>{" "}
+                            {isApplied.schedule.scheduledDate}
+                          </p>
+                          <p>
+                            <strong>Time:</strong>{" "}
+                            {isApplied.schedule.startTime} -{" "}
+                            {isApplied.schedule.endTime}
+                          </p>
+                          <p>
+                            <strong>Instruction:</strong>{" "}
+                            {isApplied.schedule.note}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-green-50 border border-green-100 rounded-md p-4 text-center">
+                        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-600 mb-2">
+                          <MdCheck className="w-6 h-6" />
+                        </div>
+                        <p className="text-green-800 font-medium text-sm">
+                          Application Submitted
+                        </p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  jobPosterInfo?.email === user?.email && (
+                    <>
+                      <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
+                        <Link to={`/editJob/${jobId}`}>
+                          <button className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition duration-200 flex items-center justify-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-5 w-5 mr-2"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                              />
+                            </svg>
+                            Edit Job Posting
+                          </button>
+                        </Link>
+                      </div>
+                    </>
+                  )
+                )}
+              </div>
             </div>
           </div>
         </div>
