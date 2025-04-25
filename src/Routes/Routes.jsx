@@ -1,6 +1,4 @@
-import {
-    createBrowserRouter,
-} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import Root from "../Layoutes/Root";
 import Login from "../Pages/Shared/Authentication/Login";
@@ -33,124 +31,167 @@ import TopRecruitingSectors from "../Pages/Admin/TopRecruitingSectors";
 import CategoryWiseReport from "../Pages/Admin/CategoryWiseReport";
 
 const router = createBrowserRouter([
-    {
+  {
+    path: "/",
+    errorElement: <ErrorPage></ErrorPage>,
+    element: <Root></Root>,
+    children: [
+      {
         path: "/",
-        errorElement: <ErrorPage></ErrorPage>,
-        element: <Root></Root>,
-        children: [
-            {
-                path: "/",
-                element: <Home></Home>
-            },
-            {
-                path: "/adminHome",
-                element: <AdminHome></AdminHome>
-            },
-            {
-                path: "/admin/topCompanies",
-                element: <TopRecruitingCompanies></TopRecruitingCompanies>
-            },
-            {
-                path: "/admin/topSectors",
-                element: <TopRecruitingSectors></TopRecruitingSectors>
-            },
-            {
-                path: "/admin/categoryWiseReport",
-                element: <CategoryWiseReport></CategoryWiseReport>
-            },
+        element: <Home></Home>,
+      },
+      {
+        path: "/adminHome",
+        element: <AdminHome></AdminHome>,
+      },
+      {
+        path: "/admin/topCompanies",
+        element: <TopRecruitingCompanies></TopRecruitingCompanies>,
+      },
+      {
+        path: "/admin/topSectors",
+        element: <TopRecruitingSectors></TopRecruitingSectors>,
+      },
+      {
+        path: "/admin/categoryWiseReport",
+        element: <CategoryWiseReport></CategoryWiseReport>,
+      },
 
-            // Authentication Routes
-            {
-                path: "/login",
-                element: <Login></Login>
-            },
-            {
-                path: "/register",
-                element: <Registration></Registration>
-            },
-            {
-                path: "/recruiterRegistration",
-                element: <RecruiterRegistration></RecruiterRegistration>
-            },
+      // Authentication Routes
+      {
+        path: "/login",
+        element: <Login></Login>,
+      },
+      {
+        path: "/register",
+        element: <Registration></Registration>,
+      },
+      {
+        path: "/recruiterRegistration",
+        element: <RecruiterRegistration></RecruiterRegistration>,
+      },
 
-            // User Routes
-            {
-                path: "/jobDetails/:jobId",
-                element: <JobDetails></JobDetails>
-            },
-            {
-                path: "/jobs",
-                element: <Jobs></Jobs>
-            },
-            {
-                path: "/appliedJobs",
-                element: <PrivateRoute><AppliedJobs></AppliedJobs></PrivateRoute>
-            },
-            {
-                path: "/jobs/:category",
-                element: <JobsByCategory></JobsByCategory>
-            },
-            {
-                path: "/profile/:userId",
-                element: <Profile></Profile>
-            },
+      // User Routes
+      {
+        path: "/jobDetails/:jobId",
+        element: <JobDetails></JobDetails>,
+      },
+      {
+        path: "/jobs",
+        element: <Jobs></Jobs>,
+      },
+      {
+        path: "/appliedJobs",
+        element: (
+          <PrivateRoute>
+            <AppliedJobs></AppliedJobs>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/jobs/:category",
+        element: <JobsByCategory></JobsByCategory>,
+      },
+      {
+        path: "/profile/:userId",
+        element: <Profile></Profile>,
+      },
 
-            // Recruiter Routes
-            {
-                path: "/postJob",
-                element: <PrivateRoute><JobPostForm></JobPostForm></PrivateRoute>
-            },
-            {
-                path: "/myPostedJobs",
-                element: <PrivateRoute><MyPostedJobs></MyPostedJobs></PrivateRoute>
-            },
-            {
-                path: "/seeApplicants/:jobId",
-                element: <PrivateRoute><SeeApplicants></SeeApplicants></PrivateRoute>
-            },
-            {
-                path: '/jobDetailsAndEdit/:jobId',
-                element: <PrivateRoute><JobDetailsAndEdit></JobDetailsAndEdit></PrivateRoute>
-            },
-            {
-                path: "/editJob/:jobId",
-                element: <PrivateRoute><EditJob></EditJob></PrivateRoute>
-            }
-            
-        ],
-    },
-    {
-        path: "/dashboard",
-        element: <PrivateRoute><Dashboard></Dashboard></PrivateRoute>,
-        children: [
-            {
-                path: "personalInfo",
-                element: <UserPrivateRoute><PersonalInfo></PersonalInfo></UserPrivateRoute>
-            },
-            {
-                path: "editPersonalInfo",
-                element: <UserPrivateRoute><EditPersonalInfo></EditPersonalInfo></UserPrivateRoute>
-            },
-            {
-                path: "education",
-                element: <UserPrivateRoute><Education></Education></UserPrivateRoute>
-            },
-            {
-                path: "experience",
-                element: <UserPrivateRoute><Experience></Experience></UserPrivateRoute>
-            },
-            
-            // Recruiter Profile
-            {
-                path: "recruiterProfile",
-                element: <RecruiterProfile></RecruiterProfile>
-            },
-            {
-                path: "recruiterProfileEdit",
-                element: <RecruiterProfileEdit></RecruiterProfileEdit>
-            },
-        ]   
-    }
+      // Recruiter Routes
+      {
+        path: "/postJob",
+        element: (
+          <PrivateRoute>
+            <JobPostForm></JobPostForm>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/myPostedJobs",
+        element: (
+          <PrivateRoute>
+            <MyPostedJobs></MyPostedJobs>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/seeApplicants/:jobId",
+        element: (
+          <PrivateRoute>
+            <SeeApplicants></SeeApplicants>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/jobDetailsAndEdit/:jobId",
+        element: (
+          <PrivateRoute>
+            <JobDetailsAndEdit></JobDetailsAndEdit>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/editJob/:jobId",
+        element: (
+          <PrivateRoute>
+            <EditJob></EditJob>
+          </PrivateRoute>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <Dashboard></Dashboard>
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        path: "personalInfo",
+        element: (
+          <UserPrivateRoute>
+            <PersonalInfo></PersonalInfo>
+          </UserPrivateRoute>
+        ),
+      },
+      {
+        path: "editPersonalInfo",
+        element: (
+          <UserPrivateRoute>
+            <EditPersonalInfo></EditPersonalInfo>
+          </UserPrivateRoute>
+        ),
+      },
+      {
+        path: "education",
+        element: (
+          <UserPrivateRoute>
+            <Education></Education>
+          </UserPrivateRoute>
+        ),
+      },
+      {
+        path: "experience",
+        element: (
+          <UserPrivateRoute>
+            <Experience></Experience>
+          </UserPrivateRoute>
+        ),
+      },
+
+      // Recruiter Profile
+      {
+        path: "recruiterProfile",
+        element: <RecruiterProfile></RecruiterProfile>,
+      },
+      {
+        path: "recruiterProfileEdit",
+        element: <RecruiterProfileEdit></RecruiterProfileEdit>,
+      },
+    ],
+  },
 ]);
 
 export default router;
