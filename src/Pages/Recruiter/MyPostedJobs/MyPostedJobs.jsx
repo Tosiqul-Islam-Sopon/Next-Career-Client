@@ -155,7 +155,7 @@ const MyPostedJobs = () => {
             Failed to Load Jobs
           </h2>
           <p className="text-gray-600 mb-4">
-            We couldn't load your posted jobs. Please try again later or contact
+            We couldn&apos;t load your posted jobs. Please try again later or contact
             support if the issue persists.
           </p>
           <button

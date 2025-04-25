@@ -65,7 +65,7 @@ const Jobs = () => {
   }
 
   return (
-    <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 min-h-screen">
+    <div className="w-full pt-24 mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Job Listings</h1>
         <p className="text-gray-600">

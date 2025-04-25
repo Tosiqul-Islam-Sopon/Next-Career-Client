@@ -14,6 +14,7 @@ import {
   Search,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import RecruitmentProgressBar from "../../Recruiter/MyPostedJobs/RecruitmentProgressBar";
 
 const AppliedJobs = () => {
   const { user } = useContext(AuthContext);
@@ -156,6 +157,8 @@ const AppliedJobs = () => {
                   ? new Date(appliedUser.appliedOn).toLocaleDateString()
                   : "N/A";
 
+                const progressStages = appliedUser?.progressStages || [];
+
                 return (
                   <div
                     key={application._id}
@@ -203,6 +206,10 @@ const AppliedJobs = () => {
                             {job.salaryType || "per month"}
                           </span>
                         </div>
+                        <RecruitmentProgressBar
+                          completedStages={progressStages || []}
+                          stages={job.recruitmentStages || []}
+                        ></RecruitmentProgressBar>
                         <div className="mt-3 sm:mt-0 flex items-center text-gray-500 text-sm">
                           <Clock className="h-4 w-4 mr-1" />
                           <span>{getRandomDaysAgo()} days ago</span>

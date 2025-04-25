@@ -12,7 +12,6 @@ const RecruitmentProgressBar = ({ stages = [], completedStages = [] }) => {
           const isCompleted = completedStages.includes(stage)
           const isCurrent = !isCompleted && completedStages.length === index
           const isLast = index === stages.length - 1
-          const isFirst = index === 0
 
           return (
             <div key={index} className="flex-1 flex flex-col items-center relative min-w-[80px]">

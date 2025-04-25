@@ -57,6 +57,7 @@ const JobDetails = () => {
           userId: userInfo?._id,
         },
       });
+      console.log(response.data);
       return response.data;
     },
     refetchOnWindowFocus: false,
@@ -378,7 +379,7 @@ const JobDetails = () => {
                   </div>
 
                   {/* Deadline highlight */}
-                  {daysLeft > 0 && (
+                  {!isApplied?.hasApplied && daysLeft > 0 && (
                     <div className="bg-amber-50 border border-amber-100 rounded-md p-3 mb-6 flex items-center">
                       <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mr-3">
                         <MdCalendarToday className="w-4 h-4 text-amber-600" />
@@ -395,13 +396,33 @@ const JobDetails = () => {
                   )}
 
                   {/* Apply button */}
-                  {!isApplied ? (
+                  { !isApplied?.hasApplied ? (
                     <button
                       onClick={handleApplyNow}
                       className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center justify-center"
                     >
                       Apply Now
                     </button>
+                  ) : isApplied && isApplied.hasSchedule ? (
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-md p-4 text-sm text-indigo-900">
+                      <p className="font-semibold text-indigo-700 mb-2 flex items-center">
+                        <MdCalendarToday className="mr-2 text-indigo-600" />
+                        Scheduled Interview
+                      </p>
+                      <div className="text-sm text-gray-800 space-y-1">
+                        <p>
+                          <strong>Stage:</strong> {isApplied.schedule.stageName}
+                        </p>
+                        <p>
+                          <strong>Date:</strong>{" "}
+                          {isApplied.schedule.scheduledDate}
+                        </p>
+                        <p>
+                          <strong>Time:</strong> {isApplied.schedule.startTime}{" "}
+                          - {isApplied.schedule.endTime}
+                        </p>
+                      </div>
+                    </div>
                   ) : (
                     <div className="bg-green-50 border border-green-100 rounded-md p-4 text-center">
                       <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-600 mb-2">
