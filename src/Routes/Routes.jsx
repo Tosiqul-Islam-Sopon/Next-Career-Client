@@ -30,6 +30,7 @@ import TopRecruitingCompanies from "../Pages/Admin/TopRecruitingCompanies";
 import TopRecruitingSectors from "../Pages/Admin/TopRecruitingSectors";
 import CategoryWiseReport from "../Pages/Admin/CategoryWiseReport";
 import Schedules from "../Pages/Shared/Schedules/Schedules";
+import DashboardHome from "../Layoutes/DashboardHome";
 
 const router = createBrowserRouter([
   {
@@ -157,6 +158,14 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
+      {
+        index: true, // 👈 this is the dashboard landing page
+        element: (
+          <PrivateRoute>
+            <DashboardHome />
+          </PrivateRoute>
+        ),
+      },
       {
         path: "personalInfo",
         element: (

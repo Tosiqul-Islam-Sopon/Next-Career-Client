@@ -1,178 +1,381 @@
-import { useContext, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { AuthContext } from '../../../../Providers/AuthProvider';
-import { useQuery } from '@tanstack/react-query';
-import useAxiosBase from '../../../../CustomHooks/useAxiosBase';
-import Swal from 'sweetalert2';
+"use client"
 
-const Experience = () => {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm();
-    const [isFormVisible, setIsFormVisible] = useState(false);
-    const { user } = useContext(AuthContext);
-    const axiosBase = useAxiosBase();
+import { useContext, useState } from "react"
+import { useForm } from "react-hook-form"
+import { useQuery } from "@tanstack/react-query"
+import Swal from "sweetalert2"
+import {
+  Briefcase,
+  Building,
+  MapPin,
+  Calendar,
+  ClipboardList,
+  Plus,
+  X,
+  ChevronRight,
+  Clock,
+  Save,
+  CheckCircle,
+} from "lucide-react"
+import { Link } from "react-router-dom"
 
-    const { data: userInfo = null, isLoading, refetch } = useQuery({
-        queryKey: ['user', user?.email],
-        queryFn: async () => {
-            const response = await axiosBase.get(`/user-by-email/${user?.email}`);
-            return response.data;
-        }
-    });
+// These would be your actual imports in your project
+import { AuthContext } from "../../../../Providers/AuthProvider"
+import useAxiosBase from "../../../../CustomHooks/useAxiosBase"
 
-    if (isLoading) {
-        return <div className='mt-32 text-center text-5xl text-green-400'>Loading...</div>;
-    }
+export default function Experience() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm()
+  const [isFormVisible, setIsFormVisible] = useState(false)
+  const { user } = useContext(AuthContext)
+  const axiosBase = useAxiosBase()
 
-    const onSubmit = async (data) => {
-        console.log(data);
-        try {
-            const response = await axiosBase.patch(`/user/${userInfo._id}/experience`, data);
+  const {
+    data: userInfo = null,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["user", user?.email],
+    queryFn: async () => {
+      const response = await axiosBase.get(`/user-by-email/${user?.email}`)
+      return response.data
+    },
+  })
 
-            if (response.status === 200) {
-                Swal.fire({
-                    title: 'Success',
-                    text: 'Experience data added successfully',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-                setIsFormVisible(false);
-                reset();
-                refetch();
-            }
-        } catch (error) {
-            console.error('Error adding experience data:', error);
-            Swal.fire({
-                title: 'Error',
-                text: 'Failed to add experience data',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    };
-
-    const handleAddExperienceClick = () => {
-        setIsFormVisible(true);
-        reset();
-    };
-
-    const handleCancelClick = () => {
-        setIsFormVisible(false);
-        reset();
-    };
-
+  if (isLoading) {
     return (
-        <div className='mb-8'>
-            <div className='mb-4'>
-                <h2 className="text-2xl font-bold mb-4">Experience</h2>
-                {userInfo.experience && userInfo.experience.length > 0 ? (
-                    userInfo.experience.map((exp) => (
-                        <div key={exp._id} className="mb-4 p-4 border border-gray-300 rounded-lg bg-white shadow-md">
-                            <h3 className="text-xl font-bold">{exp.position}</h3>
-                            <p><strong>Company:</strong> {exp.company}</p>
-                            <p><strong>Location:</strong> {exp.location}</p>
-                            <p><strong>Start Date:</strong> {exp.startDate}</p>
-                            <p><strong>End Date:</strong> {exp.endDate === "" ? "Currently Working" : exp.endDate}</p>
-                            <p><strong>Responsibilities:</strong> {exp.responsibilities}</p>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="relative">
+          <div className="w-16 h-16 border-4 border-blue-100 rounded-full animate-spin"></div>
+          <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-blue-500 rounded-full animate-spin"></div>
+          <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-blue-500 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+        </div>
+        <p className="ml-4 text-blue-600 font-medium">Loading your work history...</p>
+      </div>
+    )
+  }
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await axiosBase.patch(`/user/${userInfo._id}/experience`, data)
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "Success!",
+          text: "Experience record added successfully",
+          icon: "success",
+          confirmButtonText: "Great!",
+          confirmButtonColor: "#3b82f6",
+        })
+        setIsFormVisible(false)
+        reset()
+        refetch()
+      }
+    } catch (error) {
+      console.error("Error adding experience data:", error)
+      Swal.fire({
+        title: "Error",
+        text: "Failed to add experience record",
+        icon: "error",
+        confirmButtonText: "Try Again",
+        confirmButtonColor: "#ef4444",
+      })
+    }
+  }
+
+  const handleAddExperienceClick = () => {
+    setIsFormVisible(true)
+    reset()
+    // Scroll to form
+    setTimeout(() => {
+      document.getElementById("experience-form")?.scrollIntoView({ behavior: "smooth" })
+    }, 100)
+  }
+
+  const handleCancelClick = () => {
+    setIsFormVisible(false)
+    reset()
+  }
+
+  // Function to format date from ISO format to readable format
+  const formatDate = (dateString) => {
+    if (!dateString) return ""
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", { year: "numeric", month: "long" })
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800 flex items-center">
+              <Briefcase className="mr-2 text-blue-600" size={28} />
+              Work Experience
+            </h1>
+            <p className="text-slate-500 mt-1">Manage your professional work history</p>
+          </div>
+
+          <div className="flex items-center">
+            <Link
+              to="/dashboard"
+              className="text-sm text-slate-500 hover:text-slate-700 flex items-center mr-4 transition-colors"
+            >
+              <span>Dashboard</span>
+              <ChevronRight size={16} />
+            </Link>
+            {!isFormVisible && (
+              <button
+                type="button"
+                className="flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm"
+                onClick={handleAddExperienceClick}
+              >
+                <Plus size={18} className="mr-1" />
+                Add Experience
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Experience List */}
+        {userInfo.experience && userInfo.experience.length > 0 ? (
+          <div className="space-y-6">
+            {userInfo.experience.map((exp) => (
+              <div
+                key={exp._id}
+                className="p-6 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div className="flex flex-col md:flex-row md:items-start gap-4">
+                  <div className="flex-shrink-0 w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <Briefcase className="h-8 w-8 text-blue-600" />
+                  </div>
+
+                  <div className="flex-grow">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                      <h3 className="text-xl font-bold text-slate-800">{exp.position}</h3>
+                      <div className="flex items-center text-sm text-slate-500 mt-1 md:mt-0">
+                        <Clock size={14} className="mr-1" />
+                        <span>
+                          {formatDate(exp.startDate)} - {exp.endDate ? formatDate(exp.endDate) : "Present"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 mt-3">
+                      <div className="flex items-start">
+                        <Building size={16} className="mr-2 text-slate-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs text-slate-500">Company</p>
+                          <p className="text-slate-700 font-medium">{exp.company}</p>
                         </div>
-                    ))
-                ) : (
-                    <p>No experience data available.</p>
+                      </div>
+
+                      <div className="flex items-start">
+                        <MapPin size={16} className="mr-2 text-slate-400 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="text-xs text-slate-500">Location</p>
+                          <p className="text-slate-700 font-medium">{exp.location}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {exp.responsibilities && (
+                      <div className="mt-4 pt-4 border-t border-slate-100">
+                        <div className="flex items-start">
+                          <ClipboardList size={16} className="mr-2 text-slate-400 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">Responsibilities</p>
+                            <p className="text-slate-600 text-sm whitespace-pre-line">{exp.responsibilities}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {!exp.endDate && (
+                      <div className="mt-4 flex items-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <CheckCircle size={12} className="mr-1" />
+                          Current Position
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white border border-slate-200 rounded-xl p-8 text-center shadow-sm">
+            <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Briefcase className="h-8 w-8 text-slate-400" />
+            </div>
+            <h3 className="text-lg font-medium text-slate-800 mb-2">No work experience yet</h3>
+            <p className="text-slate-500 mb-6">Add your professional experience to complete your profile</p>
+            {!isFormVisible && (
+              <button
+                type="button"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
+                onClick={handleAddExperienceClick}
+              >
+                <Plus size={18} className="mr-1" />
+                Add Experience
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Add Experience Form */}
+      {isFormVisible && (
+        <div
+          id="experience-form"
+          className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden transition-all duration-300 mb-8"
+        >
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-slate-800">Add Work Experience</h2>
+            <button
+              type="button"
+              onClick={handleCancelClick}
+              className="text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <form className="p-6" onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+              {/* Position */}
+              <div className="space-y-1">
+                <label className="flex items-center text-sm font-medium text-slate-700">
+                  <Briefcase size={16} className="mr-2 text-slate-400" />
+                  Position / Job Title <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("position", { required: "This field is required" })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Software Engineer, Project Manager, etc."
+                />
+                {errors.position && <p className="text-red-500 text-xs mt-1">{errors.position.message}</p>}
+              </div>
+
+              {/* Company Name */}
+              <div className="space-y-1">
+                <label className="flex items-center text-sm font-medium text-slate-700">
+                  <Building size={16} className="mr-2 text-slate-400" />
+                  Company Name <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("company", { required: "This field is required" })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Company or Organization Name"
+                />
+                {errors.company && <p className="text-red-500 text-xs mt-1">{errors.company.message}</p>}
+              </div>
+
+              {/* Location */}
+              <div className="space-y-1">
+                <label className="flex items-center text-sm font-medium text-slate-700">
+                  <MapPin size={16} className="mr-2 text-slate-400" />
+                  Location <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("location", { required: "This field is required" })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="City, Country or Remote"
+                />
+                {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location.message}</p>}
+              </div>
+
+              {/* Employment Type - New field */}
+              <div className="space-y-1">
+                <label className="flex items-center text-sm font-medium text-slate-700">
+                  <Briefcase size={16} className="mr-2 text-slate-400" />
+                  Employment Type
+                </label>
+                <select
+                  {...register("employmentType")}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                  <option value="">Select Type</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Freelance">Freelance</option>
+                  <option value="Internship">Internship</option>
+                </select>
+              </div>
+
+              {/* Start Date */}
+              <div className="space-y-1">
+                <label className="flex items-center text-sm font-medium text-slate-700">
+                  <Calendar size={16} className="mr-2 text-slate-400" />
+                  Start Date <span className="text-red-500 ml-1">*</span>
+                </label>
+                <input
+                  type="date"
+                  {...register("startDate", { required: "This field is required" })}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+                {errors.startDate && <p className="text-red-500 text-xs mt-1">{errors.startDate.message}</p>}
+              </div>
+
+              {/* End Date */}
+              <div className="space-y-1">
+                <label className="flex items-center text-sm font-medium text-slate-700">
+                  <Calendar size={16} className="mr-2 text-slate-400" />
+                  End Date <span className="text-slate-400 text-xs ml-1">(leave blank if current)</span>
+                </label>
+                <input
+                  type="date"
+                  {...register("endDate")}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              {/* Responsibilities */}
+              <div className="space-y-1 md:col-span-2">
+                <label className="flex items-center text-sm font-medium text-slate-700">
+                  <ClipboardList size={16} className="mr-2 text-slate-400" />
+                  Responsibilities <span className="text-red-500 ml-1">*</span>
+                </label>
+                <textarea
+                  {...register("responsibilities", { required: "This field is required" })}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Describe your key responsibilities, achievements, and projects..."
+                ></textarea>
+                {errors.responsibilities && (
+                  <p className="text-red-500 text-xs mt-1">{errors.responsibilities.message}</p>
                 )}
+              </div>
             </div>
 
-            {!isFormVisible && (
-                <button
-                    type="button"
-                    className="mb-4 py-2 px-4 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600"
-                    onClick={handleAddExperienceClick}
-                >
-                    Add Experience
-                </button>
-            )}
-
-            {isFormVisible && (
-                <form className="max-w-xl mx-auto p-8 border border-gray-300 rounded-lg bg-white shadow-md" onSubmit={handleSubmit(onSubmit)}>
-                    <h2 className="text-2xl font-bold mb-6 text-center">Experience</h2>
-
-                    <div className="mb-4 border-b pb-4">
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">Position*</label>
-                            <input
-                                type="text"
-                                {...register('position', { required: true })}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            />
-                            {errors.position && <span className="text-red-500">This field is required</span>}
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">Company Name*</label>
-                            <input
-                                type="text"
-                                {...register('company', { required: true })}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            />
-                            {errors.company && <span className="text-red-500">This field is required</span>}
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">Location*</label>
-                            <input
-                                type="text"
-                                {...register('location', { required: true })}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            />
-                            {errors.location && <span className="text-red-500">This field is required</span>}
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">Start Date*</label>
-                            <input
-                                type="date"
-                                {...register('startDate', { required: true })}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            />
-                            {errors.startDate && <span className="text-red-500">This field is required</span>}
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">End Date</label>
-                            <input
-                                type="date"
-                                {...register('endDate')}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            />
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-gray-700 font-bold mb-2">Responsibilities*</label>
-                            <textarea
-                                {...register('responsibilities', {required: true})}
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                            ></textarea>
-                            {errors.responsibilities && <span className="text-red-500">This field is required</span>}
-                        </div>
-
-                        <div className="flex gap-4">
-                            <button
-                                type="submit"
-                                className="py-2 px-4 bg-green-500 text-white font-bold rounded-md hover:bg-green-600"
-                            >
-                                Add
-                            </button>
-                            <button
-                                type="button"
-                                className="py-2 px-4 bg-gray-500 text-white font-bold rounded-md hover:bg-gray-600"
-                                onClick={handleCancelClick}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            )}
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                type="button"
+                className="px-4 py-2 border border-slate-300 rounded-md text-slate-700 font-medium hover:bg-slate-50 transition-colors"
+                onClick={handleCancelClick}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="flex items-center px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                <Save size={18} className="mr-2" />
+                Save Experience
+              </button>
+            </div>
+          </form>
         </div>
-    );
-};
-
-export default Experience;
+      )}
+    </div>
+  )
+}

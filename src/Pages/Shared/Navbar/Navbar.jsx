@@ -301,7 +301,7 @@ const Navbar = () => {
                       {user?.displayName}
                     </div>
                     <Link
-                      to={`/dashboard/${userRole === "recruiter" ? "recruiterProfile" : "personalInfo"}`}
+                      to={`/dashboard`}
                       className="block px-4 py-2 text-gray-700 hover:bg-green-600 hover:text-white"
                       onClick={() => setRightDropdownOpen(false)}
                     >
