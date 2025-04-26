@@ -20,6 +20,7 @@ import Swal from "sweetalert2";
 import { AuthContext } from "../Providers/AuthProvider";
 
 export default function Dashboard() {
+  const { user } = useContext(AuthContext);
   const { userRole } = useUserRole();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
@@ -94,7 +95,7 @@ export default function Dashboard() {
               <div>
                 <h3 className="font-medium text-slate-800">Welcome</h3>
                 <p className="text-sm text-slate-500">
-                  {userRole === "user" ? "Job Seeker" : "Recruiter"}
+                  {user?.displayName}
                 </p>
               </div>
             </div>

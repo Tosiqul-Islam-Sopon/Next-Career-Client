@@ -31,6 +31,11 @@ import TopRecruitingSectors from "../Pages/Admin/TopRecruitingSectors";
 import CategoryWiseReport from "../Pages/Admin/CategoryWiseReport";
 import Schedules from "../Pages/Shared/Schedules/Schedules";
 import DashboardHome from "../Layoutes/DashboardHome";
+import PostedJobs from "../Pages/Recruiter/MyPostedJobs/PostedJobsDashboard";
+import InterviewSchedules from "../Pages/Shared/Schedules/SchedulesDashboard";
+import RecruiterStatistics from "../Pages/Recruiter/Statistics/RecruiterStatictics";
+import RecruiterPrivateRoute from "../PrivateRoutes/RecruiterPrivateRoute";
+import AdminPrivateRoute from "../PrivateRoutes/AdminPrivateRoute";
 
 const router = createBrowserRouter([
   {
@@ -44,19 +49,35 @@ const router = createBrowserRouter([
       },
       {
         path: "/adminHome",
-        element: <AdminHome></AdminHome>,
+        element: (
+          <AdminPrivateRoute>
+            <AdminHome></AdminHome>
+          </AdminPrivateRoute>
+        ),
       },
       {
         path: "/admin/topCompanies",
-        element: <TopRecruitingCompanies></TopRecruitingCompanies>,
+        element: (
+          <AdminPrivateRoute>
+            <TopRecruitingCompanies></TopRecruitingCompanies>
+          </AdminPrivateRoute>
+        ),
       },
       {
         path: "/admin/topSectors",
-        element: <TopRecruitingSectors></TopRecruitingSectors>,
+        element: (
+          <AdminPrivateRoute>
+            <TopRecruitingSectors></TopRecruitingSectors>
+          </AdminPrivateRoute>
+        ),
       },
       {
         path: "/admin/categoryWiseReport",
-        element: <CategoryWiseReport></CategoryWiseReport>,
+        element: (
+          <AdminPrivateRoute>
+            <CategoryWiseReport></CategoryWiseReport>
+          </AdminPrivateRoute>
+        ),
       },
 
       // Authentication Routes
@@ -85,9 +106,9 @@ const router = createBrowserRouter([
       {
         path: "/appliedJobs",
         element: (
-          <PrivateRoute>
+          <UserPrivateRoute>
             <AppliedJobs></AppliedJobs>
-          </PrivateRoute>
+          </UserPrivateRoute>
         ),
       },
       {
@@ -96,7 +117,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile/:userId",
-        element: <Profile></Profile>,
+        element: (
+          <RecruiterPrivateRoute>
+            <Profile></Profile>
+          </RecruiterPrivateRoute>
+        ),
       },
 
       // Recruiter Routes
@@ -111,33 +136,33 @@ const router = createBrowserRouter([
       {
         path: "/myPostedJobs",
         element: (
-          <PrivateRoute>
+          <RecruiterPrivateRoute>
             <MyPostedJobs></MyPostedJobs>
-          </PrivateRoute>
+          </RecruiterPrivateRoute>
         ),
       },
       {
         path: "/seeApplicants/:jobId",
         element: (
-          <PrivateRoute>
+          <RecruiterPrivateRoute>
             <SeeApplicants></SeeApplicants>
-          </PrivateRoute>
+          </RecruiterPrivateRoute>
         ),
       },
       {
         path: "/jobDetailsAndEdit/:jobId",
         element: (
-          <PrivateRoute>
+          <RecruiterPrivateRoute>
             <JobDetailsAndEdit></JobDetailsAndEdit>
-          </PrivateRoute>
+          </RecruiterPrivateRoute>
         ),
       },
       {
         path: "/editJob/:jobId",
         element: (
-          <PrivateRoute>
+          <RecruiterPrivateRoute>
             <EditJob></EditJob>
-          </PrivateRoute>
+          </RecruiterPrivateRoute>
         ),
       },
       {
@@ -202,11 +227,43 @@ const router = createBrowserRouter([
       // Recruiter Profile
       {
         path: "recruiterProfile",
-        element: <RecruiterProfile></RecruiterProfile>,
+        element: (
+          <RecruiterPrivateRoute>
+            <RecruiterProfile></RecruiterProfile>
+          </RecruiterPrivateRoute>
+        ),
       },
       {
         path: "recruiterProfileEdit",
-        element: <RecruiterProfileEdit></RecruiterProfileEdit>,
+        element: (
+          <RecruiterPrivateRoute>
+            <RecruiterProfileEdit></RecruiterProfileEdit>
+          </RecruiterPrivateRoute>
+        ),
+      },
+      {
+        path: "postedJobs",
+        element: (
+          <RecruiterPrivateRoute>
+            <PostedJobs></PostedJobs>
+          </RecruiterPrivateRoute>
+        ),
+      },
+      {
+        path: "interviews",
+        element: (
+          <RecruiterPrivateRoute>
+            <InterviewSchedules></InterviewSchedules>
+          </RecruiterPrivateRoute>
+        ),
+      },
+      {
+        path: "statistics",
+        element: (
+          <RecruiterPrivateRoute>
+            <RecruiterStatistics></RecruiterStatistics>
+          </RecruiterPrivateRoute>
+        ),
       },
     ],
   },

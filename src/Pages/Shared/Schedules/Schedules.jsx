@@ -73,7 +73,7 @@ const Schedules = () => {
     return "text-green-500"; // Future
   };
 
-  if (isLoading) {
+  if (isLoading || isJobFeatchLoading) {
     return (
       <div className="min-h-screen bg-gray-50 pt-24 px-4 md:px-12">
         <div className="max-w-5xl mx-auto">
