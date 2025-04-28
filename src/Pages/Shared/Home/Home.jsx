@@ -6,12 +6,13 @@ import BannerUser from "../../User/Home/BannerUser";
 import Categories from "../../User/Home/Categories/Categoris";
 import FeaturedJobs from "../../User/Home/FeaturedJobs/FeaturedJobs";
 import NewestJobs from "../../User/Home/Newest Jobs/NewestJobs";
+import FullScreenLoader from "../Loaders/FullScreenLoader";
 
 const Home = () => {
   const { userRole, loading } = useUserRole();
 
   if (loading) {
-    return <div>Loading...........</div>;
+    return <FullScreenLoader />
   }
 
   return (

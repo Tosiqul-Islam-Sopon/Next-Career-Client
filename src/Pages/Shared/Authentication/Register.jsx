@@ -9,9 +9,6 @@ import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
 import interviewImg from "../../../assets/Images/interview.jpg";
 import recruiteImg from "../../../assets/Images/recruite.jpg";
 
-const image_hosting_key = import.meta.env.VITE_IMAGE_UPLOAD_KEY_IMAGEBB;
-const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
-
 const Registration = () => {
   const [activeTab, setActiveTab] = useState("jobseeker");
   const [showPassword, setShowPassword] = useState(false);
