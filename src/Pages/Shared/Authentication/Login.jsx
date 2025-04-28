@@ -9,6 +9,7 @@ import Swal from "sweetalert2";
 import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
 import { AuthContext } from "../../../Providers/AuthProvider";
 import { io } from "socket.io-client";
+import auth from "../../../Firebase/firebase.config";
 const socket = io(baseUrl);
 
 export default function LoginPage() {
@@ -17,7 +18,7 @@ export default function LoginPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const axiosBase = useAxiosBase();
   const navigate = useNavigate();
-  const { logIn, googleSignIn } = useContext(AuthContext);
+  const { logIn, googleSignIn, logOut } = useContext(AuthContext);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -26,7 +27,18 @@ export default function LoginPage() {
     const password = e.target.password.value;
 
     logIn(email, password)
-      .then(() => {
+      .then(async () => {
+        if (!auth.currentUser.emailVerified) {
+          Swal.fire({
+            title: "Please Verify Email",
+            text: "You must verify your email before accessing the app.",
+            icon: "warning",
+            showConfirmButton: true,
+            timer: 10000,
+          });
+          await logOut();
+          return;
+        }
         socket.connect();
         Swal.fire({
           position: "center",

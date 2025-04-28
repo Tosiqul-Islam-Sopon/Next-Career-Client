@@ -8,6 +8,7 @@ import Swal from "sweetalert2";
 import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
 import interviewImg from "../../../assets/Images/interview.jpg";
 import recruiteImg from "../../../assets/Images/recruite.jpg";
+import FullScreenLoader from "../Loaders/FullScreenLoader";
 
 const Registration = () => {
   const [activeTab, setActiveTab] = useState("jobseeker");
@@ -17,7 +18,8 @@ const Registration = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { createUser, setNameAndPhoto, googleSignIn } = useContext(AuthContext);
+  const { createUser, setNameAndPhoto, googleSignIn, sendVerificationEmail } =
+    useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const axiosBase = useAxiosBase();
@@ -74,6 +76,7 @@ const Registration = () => {
 
       // 1. Create user
       await createUser(email, password);
+      await sendVerificationEmail();
 
       // 2. Insert user info into database
       const userInfo = {
@@ -105,20 +108,23 @@ const Registration = () => {
       // 6. Show success message and redirect
       Swal.fire({
         position: "center",
-        icon: "success",
-        title: "Registration Successful",
-        showConfirmButton: false,
-        timer: 1500,
+        title: "Almost there!",
+        text: "We've sent a verification email to your address. Please verify to activate your account and login.",
+        icon: "info",
+        showConfirmButton: true,
+        timer: 10000,
       });
-      navigate(goTo);
+
+      setIsLoading(false);
+
+      navigate("/login");
     } catch (error) {
+      setIsLoading(false);
       Swal.fire({
         title: "Sorry!",
         text: error.message || "Something went wrong",
         icon: "error",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -161,6 +167,7 @@ const Registration = () => {
 
       // 1. Create user
       await createUser(email, password);
+      await sendVerificationEmail();
 
       // 2. Insert user info into database
       const userInfo = {
@@ -202,21 +209,23 @@ const Registration = () => {
 
       Swal.fire({
         position: "center",
-        icon: "success",
-        title: "Registration Successful",
-        showConfirmButton: false,
-        timer: 1500,
+        title: "Almost there!",
+        text: "We've sent a verification email to your address. Please verify to activate your account and login.",
+        icon: "info",
+        showConfirmButton: true,
+        timer: 10000,
       });
 
-      navigate(goTo);
+      setIsLoading(false);
+
+      navigate("/login");
     } catch (error) {
+      setIsLoading(false);
       Swal.fire({
         title: "Sorry!",
         text: "Image upload failed. Please try again.",
         icon: "error",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -240,10 +249,12 @@ const Registration = () => {
                 showConfirmButton: false,
                 timer: 1500,
               });
+              setIsGoogleLoading(false);
               navigate(goTo);
             }
           })
           .catch(() => {
+            setIsGoogleLoading(false);
             Swal.fire({
               position: "center",
               icon: "error",
@@ -251,22 +262,21 @@ const Registration = () => {
               showConfirmButton: false,
               timer: 1500,
             });
-          })
-          .finally(() => {
-            setIsGoogleLoading(false);
           });
       })
       .catch((error) => {
+        setIsGoogleLoading(false);
         Swal.fire({
           title: "OPPS!!!",
           text: `${error.message}`,
           icon: "error",
         });
-      })
-      .finally(() => {
-        setIsGoogleLoading(false);
       });
   };
+
+  if (isLoading || isGoogleLoading) {
+    return <FullScreenLoader />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12 pt-24">
