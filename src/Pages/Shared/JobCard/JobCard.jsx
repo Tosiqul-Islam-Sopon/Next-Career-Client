@@ -2,7 +2,7 @@
 
 import PropTypes from "prop-types"
 import { PiOfficeChairLight, PiEyeBold } from "react-icons/pi"
-import { MdGroups, MdLocationOn, MdCalendarToday, MdAttachMoney } from "react-icons/md"
+import { MdGroups, MdLocationOn, MdCalendarToday, MdAttachMoney, MdWorkOutline } from "react-icons/md"
 import { Link } from "react-router-dom"
 import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase"
 import { useEffect, useState } from "react"
@@ -11,7 +11,7 @@ import { io } from "socket.io-client"
 const socket = io(baseUrl)
 
 const JobCard = ({ job }) => {
-  const { _id, jobTitle, salary, deadline, companyInfo, jobLocation, onSitePlace, vacancy, view } = job
+  const { _id, jobTitle, jobPosition, salary, deadline, companyInfo, jobLocation, onSitePlace, vacancy, view } = job
   const { companyName, companyLogo } = companyInfo
   const axiosBase = useAxiosBase()
 
@@ -99,7 +99,18 @@ const JobCard = ({ job }) => {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-semibold text-gray-900 truncate">{jobTitle}</h3>
-            <p className="text-sm text-gray-500">{companyName}</p>
+            <div className="flex items-center">
+              <p className="text-sm text-gray-500">{companyName}</p>
+              {jobPosition && (
+                <>
+                  <span className="mx-1.5 text-gray-300">•</span>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MdWorkOutline className="h-3.5 w-3.5 mr-1" />
+                    <span>{jobPosition}</span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <span
             className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${

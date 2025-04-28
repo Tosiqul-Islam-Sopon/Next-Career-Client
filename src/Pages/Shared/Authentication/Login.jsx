@@ -6,8 +6,10 @@ import { Link, useNavigate } from "react-router-dom";
 // Import your image properly
 import loginImage from "../../../assets/Images/login.png"; // Adjust path as needed
 import Swal from "sweetalert2";
-import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
 import { AuthContext } from "../../../Providers/AuthProvider";
+import { io } from "socket.io-client";
+const socket = io(baseUrl);
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +27,7 @@ export default function LoginPage() {
 
     logIn(email, password)
       .then(() => {
+        socket.connect();
         Swal.fire({
           position: "center",
           icon: "success",
@@ -57,6 +60,7 @@ export default function LoginPage() {
           role: "user",
         };
         axiosBase.post("/users", userInfo);
+        socket.connect();
         Swal.fire({
           position: "center",
           icon: "success",

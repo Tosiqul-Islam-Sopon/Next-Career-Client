@@ -37,7 +37,9 @@ const Navbar = () => {
 
   useEffect(() => {
     // Register recruiter with their user ID
-    socket.emit("register", userInfo?._id);
+    if (userInfo?._id) {
+      socket.emit("register", userInfo?._id);
+    }
 
     // Listen for job application notifications
     socket.on("stageProgress", (data) => {
@@ -52,7 +54,9 @@ const Navbar = () => {
 
   useEffect(() => {
     // Register recruiter with their user ID
-    socket.emit("register", userInfo?._id);
+    if (userInfo?._id) {
+      socket.emit("register", userInfo._id);
+    }
 
     // Listen for job application notifications
     socket.on("jobApplication", (data) => {
@@ -185,6 +189,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     setRightDropdownOpen(!rightDropdownOpen);
+    socket.disconnect();
     logOut()
       .then(() => {
         window.location.reload();

@@ -192,6 +192,25 @@ const JobPostForm = () => {
                 {errors.jobTitle && <p className="mt-1 text-sm text-red-600">{errors.jobTitle.message}</p>}
               </div>
 
+              {/* Job Position */}
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Job Position <span className="text-red-500">*</span>
+                </label>
+                <div className="relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <MdWorkOutline className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    {...register("jobPosition", { required: "Job position is required" })}
+                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g. Junior, Mid-level, Senior"
+                  />
+                </div>
+                {errors.jobPosition && <p className="mt-1 text-sm text-red-600">{errors.jobPosition.message}</p>}
+              </div>
+
               {/* Job Description */}
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -1,97 +1,86 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
-import useAxiosBase from "../../../CustomHooks/useAxiosBase"
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import Swal from "sweetalert2";
 
 const EditJob = () => {
-  const { jobId } = useParams()
-  const axiosBase = useAxiosBase()
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(true)
-  const [previewImage, setPreviewImage] = useState(null)
+  const { jobId } = useParams();
+  const axiosBase = useAxiosBase();
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
     handleSubmit,
     register,
     reset,
     watch,
-    setValue,
-    formState: { errors, isDirty, isSubmitting },
-  } = useForm()
+    formState: { errors, isSubmitting },
+  } = useForm();
 
   useEffect(() => {
     const fetchJobData = async () => {
       try {
-        setIsLoading(true)
-        const response = await axiosBase.get(`/jobs/job/${jobId}`)
-        reset(response.data) // Set previous data as default
-        setPreviewImage(response.data.recruitmentImageUrl)
-        setIsLoading(false)
+        setIsLoading(true);
+        const response = await axiosBase.get(`/jobs/job/${jobId}`);
+        reset(response.data); // Set previous data as default
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching job data:", error)
-        setIsLoading(false)
+        console.error("Error fetching job data:", error);
+        setIsLoading(false);
       }
-    }
-    fetchJobData()
-  }, [axiosBase, jobId, reset])
+    };
+    fetchJobData();
+  }, [axiosBase, jobId, reset]);
 
   const onSubmit = async (data) => {
     try {
-      // Handle file upload if there's a new image
-      if (data.recruitmentImage && data.recruitmentImage[0]) {
-        // In a real implementation, you would upload the file to your server/cloud storage
-        // and get back a URL to store in the database
-        console.log("Would upload file:", data.recruitmentImage[0])
+      const dataToSubmit = { ...data };
+      const { _id, ...dataWithoutId } = dataToSubmit;
 
-        // For demo purposes, we're just logging the file
-        // In a real app, you would replace this with your file upload logic
-        // data.recruitmentImageUrl = await uploadFileAndGetUrl(data.recruitmentImage[0])
-      }
+      await axiosBase.patch(`/jobs/job/${jobId}`, dataWithoutId);
 
-      // Remove the file input data before sending to API
-      const dataToSubmit = { ...data }
-      delete dataToSubmit.recruitmentImage
-
-      console.log("Submitting data:", dataToSubmit)
-      // Uncomment to actually submit the data
-      // await axiosBase.put(`/jobs/job/${jobId}`, dataToSubmit)
-      // navigate(`/job-details/${jobId}`)
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Job Updated Successful",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate(`/jobDetails/${jobId}`);
     } catch (error) {
-      console.error("Error updating job:", error)
+      console.error("Error updating job:", error);
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Job Update Failed",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
-  }
+  };
 
   const handleCancel = () => {
-    navigate(`/jobDetails/${jobId}`)
-  }
+    navigate(`/jobDetails/${jobId}`);
+  };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setPreviewImage(reader.result)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const companyWebsite = watch("companyInfo.website")
-  const companyName = watch("companyInfo.companyName")
-  const companyLogo = watch("companyInfo.companyLogo")
-  const jobTitle = watch("jobTitle")
+  const companyWebsite = watch("companyInfo.website");
+  const companyName = watch("companyInfo.companyName");
+  const companyLogo = watch("companyInfo.companyLogo");
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-16">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-t-green-500 border-green-200 border-solid rounded-full animate-spin mx-auto mb-4"></div>
-          <h2 className="text-xl font-medium text-gray-700">Loading job details...</h2>
+          <h2 className="text-xl font-medium text-gray-700">
+            Loading job details...
+          </h2>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -107,14 +96,23 @@ const EditJob = () => {
           <div className="px-6 py-6 md:px-8 md:py-8 relative">
             <div className="flex flex-col items-center -mt-16 mb-6">
               <img
-                src={companyLogo || "/placeholder.svg?height=80&width=80&query=company logo"}
+                src={
+                  companyLogo ||
+                  "/placeholder.svg?height=80&width=80&query=company logo"
+                }
                 alt={companyName || "Company"}
                 className="w-20 h-20 rounded-full border-4 border-white shadow-md object-cover bg-white"
               />
-              <h1 className="text-2xl font-bold mt-2 text-gray-900">{companyName || "Company Name"}</h1>
+              <h1 className="text-2xl font-bold mt-2 text-gray-900">
+                {companyName || "Company Name"}
+              </h1>
               {companyWebsite && (
                 <a
-                  href={companyWebsite.startsWith("http") ? companyWebsite : `https://${companyWebsite}`}
+                  href={
+                    companyWebsite.startsWith("http")
+                      ? companyWebsite
+                      : `https://${companyWebsite}`
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-green-600 hover:underline mt-1 flex items-center"
@@ -160,29 +158,60 @@ const EditJob = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Job Title*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Title*
+                    </label>
                     <input
                       type="text"
                       {...register("jobTitle", { required: true })}
                       className="w-full p-2.5 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       disabled
                     />
-                    {errors.jobTitle && <p className="mt-1 text-sm text-red-600">Job title is required</p>}
+                    {errors.jobTitle && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Job title is required
+                      </p>
+                    )}
                   </div>
 
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Job Description*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Position*
+                    </label>
+                    <input
+                      type="text"
+                      {...register("jobPosition", { required: true })}
+                      className="w-full p-2.5 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      placeholder="e.g. Junior, Mid-level, Senior"
+                    />
+                    {errors.jobPosition && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Job position is required
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Description*
+                    </label>
                     <textarea
                       {...register("jobDescription", { required: true })}
                       rows={5}
                       className="w-full p-2.5 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="Provide a detailed description of the job role and responsibilities"
                     ></textarea>
-                    {errors.jobDescription && <p className="mt-1 text-sm text-red-600">Job description is required</p>}
+                    {errors.jobDescription && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Job description is required
+                      </p>
+                    )}
                   </div>
 
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Requirements*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Requirements*
+                    </label>
                     <textarea
                       {...register("jobRequirements", { required: true })}
                       rows={4}
@@ -190,12 +219,16 @@ const EditJob = () => {
                       placeholder="List the requirements for this position"
                     ></textarea>
                     {errors.jobRequirements && (
-                      <p className="mt-1 text-sm text-red-600">Job requirements are required</p>
+                      <p className="mt-1 text-sm text-red-600">
+                        Job requirements are required
+                      </p>
                     )}
                   </div>
 
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Qualifications*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Qualifications*
+                    </label>
                     <textarea
                       {...register("jobQualifications", { required: true })}
                       rows={4}
@@ -203,7 +236,9 @@ const EditJob = () => {
                       placeholder="List the qualifications needed for this position"
                     ></textarea>
                     {errors.jobQualifications && (
-                      <p className="mt-1 text-sm text-red-600">Job qualifications are required</p>
+                      <p className="mt-1 text-sm text-red-600">
+                        Job qualifications are required
+                      </p>
                     )}
                   </div>
                 </div>
@@ -230,7 +265,9 @@ const EditJob = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Category*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Category*
+                    </label>
                     <select
                       {...register("jobCategory", { required: true })}
                       className="w-full p-2.5 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -239,13 +276,21 @@ const EditJob = () => {
                       <option value="Marketing">Marketing</option>
                       <option value="Development">Development</option>
                       <option value="Design">Design</option>
-                      <option value="SoftwareEngineer">Software Engineer</option>
+                      <option value="SoftwareEngineer">
+                        Software Engineer
+                      </option>
                     </select>
-                    {errors.jobCategory && <p className="mt-1 text-sm text-red-600">Category is required</p>}
+                    {errors.jobCategory && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Category is required
+                      </p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Job Type*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Type*
+                    </label>
                     <select
                       {...register("jobType", { required: true })}
                       className="w-full p-2.5 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -256,11 +301,17 @@ const EditJob = () => {
                       <option value="Contract">Contract</option>
                       <option value="Intern">Intern</option>
                     </select>
-                    {errors.jobType && <p className="mt-1 text-sm text-red-600">Job type is required</p>}
+                    {errors.jobType && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Job type is required
+                      </p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Job Location*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Job Location*
+                    </label>
                     <select
                       {...register("jobLocation", { required: true })}
                       className="w-full p-2.5 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
@@ -270,13 +321,19 @@ const EditJob = () => {
                       <option value="Remote">Remote</option>
                       <option value="Hybrid">Hybrid</option>
                     </select>
-                    {errors.jobLocation && <p className="mt-1 text-sm text-red-600">Job location is required</p>}
+                    {errors.jobLocation && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Job location is required
+                      </p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Location Address
-                      <span className="text-xs text-gray-500 ml-1">(if not remote)</span>
+                      <span className="text-xs text-gray-500 ml-1">
+                        (if not remote)
+                      </span>
                     </label>
                     <input
                       type="text"
@@ -287,7 +344,9 @@ const EditJob = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Salary* (per month)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Salary* (per month)
+                    </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <span className="text-gray-500">৳</span>
@@ -299,11 +358,17 @@ const EditJob = () => {
                         placeholder="e.g. 50000"
                       />
                     </div>
-                    {errors.salary && <p className="mt-1 text-sm text-red-600">Salary is required</p>}
+                    {errors.salary && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Salary is required
+                      </p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Vacancy*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Vacancy*
+                    </label>
                     <input
                       type="number"
                       {...register("vacancy", { required: true, min: 1 })}
@@ -311,17 +376,27 @@ const EditJob = () => {
                       placeholder="Number of positions"
                       min="1"
                     />
-                    {errors.vacancy && <p className="mt-1 text-sm text-red-600">Vacancy is required</p>}
+                    {errors.vacancy && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Vacancy is required
+                      </p>
+                    )}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Application Deadline*</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Application Deadline*
+                    </label>
                     <input
                       type="date"
                       {...register("deadline", { required: true })}
                       className="w-full p-2.5 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     />
-                    {errors.deadline && <p className="mt-1 text-sm text-red-600">Deadline is required</p>}
+                    {errors.deadline && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Deadline is required
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -375,7 +450,7 @@ const EditJob = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditJob
+export default EditJob;

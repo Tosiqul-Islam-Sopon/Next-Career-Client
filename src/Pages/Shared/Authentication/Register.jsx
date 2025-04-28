@@ -70,7 +70,7 @@ const Registration = () => {
       setIsLoading(true);
 
       const profileImageFormData = new FormData();
-      profileImageFormData.append("image", photoFile);
+      profileImageFormData.append("file", photoFile);
 
       // 1. Create user
       await createUser(email, password);
@@ -154,10 +154,10 @@ const Registration = () => {
 
     try {
       const profileImageFormData = new FormData();
-      profileImageFormData.append("image", photoFile);
+      profileImageFormData.append("file", photoFile);
 
       const logoFormData = new FormData();
-      logoFormData.append("image", logoFile);
+      logoFormData.append("file", logoFile);
 
       // 1. Create user
       await createUser(email, password);

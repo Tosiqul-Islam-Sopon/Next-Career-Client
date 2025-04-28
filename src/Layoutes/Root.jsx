@@ -2,15 +2,14 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../Pages/Shared/Navbar/Navbar";
 import Footer from "../Pages/Shared/Footer/Footer";
 import useUserRole from "../CustomHooks/useUserRole";
+import FullScreenLoader from "../Pages/Shared/Loaders/FullScreenLoader";
 
 const Root = () => {
   const { userRole, loading } = useUserRole();
 
   if (loading) {
     return (
-      <>
-        <h1>Loading............</h1>
-      </>
+      <FullScreenLoader />
     );
   }
 
