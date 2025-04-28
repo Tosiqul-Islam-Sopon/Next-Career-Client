@@ -4,31 +4,31 @@ import useAxiosBase from "./useAxiosBase";
 
 const useUserRole = () => {
   const { user } = useContext(AuthContext);
-  const [userRole, setUserRole] = useState(null); // Initialize as null or other appropriate value
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [userRole, setUserRole] = useState(null); 
+  const [loading, setLoading] = useState(true); 
   const axiosBase = useAxiosBase();
 
   useEffect(() => {
     const getUserRole = async () => {
       if (user?.email) {
         try {
-          setLoading(true); // Start loading
+          setLoading(true); 
           const response = await axiosBase.get(`/user/userRole/${user.email}`);
           setUserRole(response.data);
         } catch (error) {
           console.error("Error fetching user role:", error);
-          setUserRole("user"); // Optionally, set a default role on error
+          setUserRole("user"); 
         } finally {
-          setLoading(false); // End loading
+          setLoading(false);
         }
       } else {
-        setLoading(false); // End loading if no user
+        setLoading(false);
       }
     };
     getUserRole();
-  }, [user?.email, axiosBase]); // Use user.email for dependency
+  }, [user?.email, axiosBase]); 
 
-  return { userRole, loading }; // Return both userRole and loading state
+  return { userRole, loading };
 };
 
 export default useUserRole;
