@@ -1,63 +1,62 @@
-"use client"
+"use client";
 
-import { useContext, useState } from "react"
-import { Eye, EyeOff } from "lucide-react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
-import { AuthContext } from "../../../Providers/AuthProvider"
-import Swal from "sweetalert2"
-import useAxiosBase from "../../../CustomHooks/useAxiosBase"
-import registerImg from "../../../assets/Images/register.jpg"
-import interviewImg from "../../../assets/Images/interview.jpg"
-import recruiteImg from "../../../assets/Images/recruite.jpg"
+import { useContext, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../Providers/AuthProvider";
+import Swal from "sweetalert2";
+import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
+import interviewImg from "../../../assets/Images/interview.jpg";
+import recruiteImg from "../../../assets/Images/recruite.jpg";
 
-const image_hosting_key = import.meta.env.VITE_IMAGE_UPLOAD_KEY_IMAGEBB
-const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`
+const image_hosting_key = import.meta.env.VITE_IMAGE_UPLOAD_KEY_IMAGEBB;
+const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 const Registration = () => {
-  const [activeTab, setActiveTab] = useState("jobseeker")
-  const [showPassword, setShowPassword] = useState(false)
-  const [photoFile, setPhotoFile] = useState(null)
-  const [logoFile, setLogoFile] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("jobseeker");
+  const [showPassword, setShowPassword] = useState(false);
+  const [photoFile, setPhotoFile] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { createUser, setNameAndPhoto, googleSignIn } = useContext(AuthContext)
-  const location = useLocation()
-  const navigate = useNavigate()
-  const axiosBase = useAxiosBase()
-  const goTo = location?.state?.from || "/"
+  const { createUser, setNameAndPhoto, googleSignIn } = useContext(AuthContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const axiosBase = useAxiosBase();
+  const goTo = location?.state?.from || "/";
 
   const validatePassword = (password) => {
     if (password.length < 6) {
-      return "Password must be at least 6 characters long."
+      return "Password must be at least 6 characters long.";
     }
     if (!/[A-Z]/.test(password)) {
-      return "Password must contain at least one capital letter."
+      return "Password must contain at least one capital letter.";
     }
     if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      return "Password must contain at least one special character."
+      return "Password must contain at least one special character.";
     }
     if (!/\d/.test(password)) {
-      return "Password must contain at least one numeric character."
+      return "Password must contain at least one numeric character.";
     }
-    return true
-  }
+    return true;
+  };
 
   const handleJobSeekerRegister = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    const name = e.target.name.value
-    const email = e.target.email.value
-    const password = e.target.password.value
+    e.preventDefault();
+    setIsLoading(true);
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
     if (validatePassword(password) !== true) {
       Swal.fire({
         title: "Sorry!",
         text: validatePassword(password),
         icon: "error",
-      })
-      setIsLoading(false)
-      return
+      });
+      setIsLoading(false);
+      return;
     }
 
     if (!photoFile) {
@@ -65,113 +64,85 @@ const Registration = () => {
         title: "Sorry!",
         text: "Please upload a photo.",
         icon: "error",
-      })
-      setIsLoading(false)
-      return
+      });
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const formData = new FormData()
-      formData.append("image", photoFile)
-      const response = await fetch(image_hosting_api, {
-        method: "POST",
-        body: formData,
-      })
-      const data = await response.json()
+      setIsLoading(true);
 
-      if (data.success) {
-        const url = data.data.url
-        createUser(email, password)
-          .then(() => {
-            setNameAndPhoto(name, url)
-              .then(() => {
-                const userInfo = {
-                  name,
-                  email,
-                  role: "user",
-                }
-                axiosBase
-                  .post("/users", userInfo)
-                  .then((res) => {
-                    if (res.data.insertedId) {
-                      Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Registration Successful",
-                        showConfirmButton: false,
-                        timer: 1500,
-                      })
-                      navigate(goTo)
-                    }
-                  })
-                  .catch(() => {
-                    Swal.fire({
-                      position: "center",
-                      icon: "error",
-                      title: "Sorry!!! Something went wrong",
-                      showConfirmButton: false,
-                      timer: 1500,
-                    })
-                  })
-                  .finally(() => {
-                    setIsLoading(false)
-                  })
-              })
-              .catch(() => {
-                Swal.fire({
-                  position: "center",
-                  icon: "error",
-                  title: "Sorry!!! Something went wrong",
-                  showConfirmButton: false,
-                  timer: 1500,
-                })
-                setIsLoading(false)
-              })
-          })
-          .catch((error) => {
-            Swal.fire({
-              title: "Sorry!",
-              text: `${error.message}`,
-              icon: "error",
-            })
-            setIsLoading(false)
-          })
-      } else {
-        Swal.fire({
-          title: "Sorry!",
-          text: "Image upload failed. Please try again.",
-          icon: "error",
-        })
-        setIsLoading(false)
+      const profileImageFormData = new FormData();
+      profileImageFormData.append("image", photoFile);
+
+      // 1. Create user
+      await createUser(email, password);
+
+      // 2. Insert user info into database
+      const userInfo = {
+        name,
+        email,
+        role: "user",
+      };
+      const res = await axiosBase.post("/users", userInfo);
+
+      // 3. Extract inserted ID
+      const userId = res?.data?.insertedId;
+      if (!userId) {
+        throw new Error("User ID not found after creating user");
       }
+
+      // 4. Upload profile image
+      await axiosBase.post(
+        `/uploadProfileImage/${userId}`,
+        profileImageFormData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      // 5. Set profile picture
+      const profileImageUrl = `${baseUrl}/profileImage/${userId}`;
+      await setNameAndPhoto(name, profileImageUrl);
+
+      // 6. Show success message and redirect
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Registration Successful",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      navigate(goTo);
     } catch (error) {
       Swal.fire({
         title: "Sorry!",
-        text: "Image upload failed. Please try again.",
+        text: error.message || "Something went wrong",
         icon: "error",
-      })
-      setIsLoading(false)
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleRecruiterRegister = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    const name = e.target.name.value
-    const email = e.target.email.value
-    const password = e.target.password.value
-    const companyName = e.target.companyName.value
-    const position = e.target.position.value
-    const website = e.target.website.value
+    e.preventDefault();
+    setIsLoading(true);
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    const companyName = e.target.companyName.value;
+    const position = e.target.position.value;
+    const website = e.target.website.value;
 
     if (validatePassword(password) !== true) {
       Swal.fire({
         title: "Sorry!",
         text: validatePassword(password),
         icon: "error",
-      })
-      setIsLoading(false)
-      return
+      });
+      setIsLoading(false);
+      return;
     }
 
     if (!photoFile || !logoFile) {
@@ -179,118 +150,88 @@ const Registration = () => {
         title: "Sorry!",
         text: "Please upload both photo and company logo.",
         icon: "error",
-      })
-      setIsLoading(false)
-      return
+      });
+      setIsLoading(false);
+      return;
     }
 
     try {
-      const photoFormData = new FormData()
-      photoFormData.append("image", photoFile)
-      const photoResponse = await fetch(image_hosting_api, {
-        method: "POST",
-        body: photoFormData,
-      })
-      const photoData = await photoResponse.json()
+      const profileImageFormData = new FormData();
+      profileImageFormData.append("image", photoFile);
 
-      const logoFormData = new FormData()
-      logoFormData.append("image", logoFile)
-      const logoResponse = await fetch(image_hosting_api, {
-        method: "POST",
-        body: logoFormData,
-      })
-      const logoData = await logoResponse.json()
+      const logoFormData = new FormData();
+      logoFormData.append("image", logoFile);
 
-      if (photoData.success && logoData.success) {
-        const photoUrl = photoData.data.url
-        const companyLogo = logoData.data.url
+      // 1. Create user
+      await createUser(email, password);
 
-        createUser(email, password)
-          .then(() => {
-            setNameAndPhoto(name, photoUrl)
-              .then(() => {
-                const userInfo = {
-                  name,
-                  email,
-                  role: "recruiter",
-                  companyName,
-                  position,
-                  website,
-                  companyLogo,
-                }
-                axiosBase
-                  .post("/users", userInfo)
-                  .then((res) => {
-                    if (res.data.insertedId) {
-                      Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Registration Successful",
-                        showConfirmButton: false,
-                        timer: 1500,
-                      })
-                      navigate(goTo)
-                    }
-                  })
-                  .catch(() => {
-                    Swal.fire({
-                      position: "center",
-                      icon: "error",
-                      title: "Sorry!!! Something went wrong",
-                      showConfirmButton: false,
-                      timer: 1500,
-                    })
-                  })
-                  .finally(() => {
-                    setIsLoading(false)
-                  })
-              })
-              .catch(() => {
-                Swal.fire({
-                  position: "center",
-                  icon: "error",
-                  title: "Sorry!!! Something went wrong",
-                  showConfirmButton: false,
-                  timer: 1500,
-                })
-                setIsLoading(false)
-              })
-          })
-          .catch((error) => {
-            Swal.fire({
-              title: "Sorry!",
-              text: `${error.message}`,
-              icon: "error",
-            })
-            setIsLoading(false)
-          })
-      } else {
-        Swal.fire({
-          title: "Sorry!",
-          text: "Image upload failed. Please try again.",
-          icon: "error",
-        })
-        setIsLoading(false)
+      // 2. Insert user info into database
+      const userInfo = {
+        name,
+        email,
+        role: "recruiter",
+        companyName,
+        position,
+        website,
+      };
+      const res = await axiosBase.post("/users", userInfo);
+      const userId = res?.data?.insertedId;
+      if (!userId) {
+        throw new Error("User ID not found after creating user");
       }
+
+      await axiosBase.post(
+        `/uploadProfileImage/${userId}`,
+        profileImageFormData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+
+      await axiosBase.post(`/uploadCompanyLogo/${userId}`, logoFormData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const profileImageLink = `${baseUrl}/profileImage/${userId}`;
+      const companyLogoLink = `${baseUrl}/companyLogo/${userId}`;
+
+      await setNameAndPhoto(name, profileImageLink);
+
+      const updatedUser = { ...userInfo, companyLogo: companyLogoLink };
+
+      await axiosBase.patch(`/recruiter/${userId}`, updatedUser, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Registration Successful",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      navigate(goTo);
     } catch (error) {
       Swal.fire({
         title: "Sorry!",
         text: "Image upload failed. Please try again.",
         icon: "error",
-      })
-      setIsLoading(false)
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleLogin = () => {
-    setIsGoogleLoading(true)
+    setIsGoogleLoading(true);
     googleSignIn()
       .then((res) => {
         const userInfo = {
           name: res.user?.displayName,
           email: res.user?.email,
           role: "user",
-        }
+        };
         axiosBase
           .post("/users", userInfo)
           .then((res) => {
@@ -301,8 +242,8 @@ const Registration = () => {
                 title: "Registration Successful",
                 showConfirmButton: false,
                 timer: 1500,
-              })
-              navigate(goTo)
+              });
+              navigate(goTo);
             }
           })
           .catch(() => {
@@ -312,30 +253,34 @@ const Registration = () => {
               title: "Sorry!!! Something went wrong",
               showConfirmButton: false,
               timer: 1500,
-            })
+            });
           })
           .finally(() => {
-            setIsGoogleLoading(false)
-          })
+            setIsGoogleLoading(false);
+          });
       })
       .catch((error) => {
         Swal.fire({
           title: "OPPS!!!",
           text: `${error.message}`,
           icon: "error",
-        })
+        });
       })
       .finally(() => {
-        setIsGoogleLoading(false)
-      })
-  }
+        setIsGoogleLoading(false);
+      });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">Create Your Account</h1>
-          <p className="mt-3 text-lg text-gray-600">Join Next Career and connect with opportunities</p>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900">
+            Create Your Account
+          </h1>
+          <p className="mt-3 text-lg text-gray-600">
+            Join Next Career and connect with opportunities
+          </p>
         </div>
 
         {/* Tabs */}
@@ -344,7 +289,9 @@ const Registration = () => {
             <button
               type="button"
               className={`px-6 py-3 text-sm font-medium rounded-l-lg ${
-                activeTab === "jobseeker" ? "z-10 ring-2 ring-blue-500 text-blue-700" : "bg-white text-gray-700 hover:bg-gray-50"
+                activeTab === "jobseeker"
+                  ? "z-10 ring-2 ring-blue-500 text-blue-700"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
               } border border-gray-200`}
               onClick={() => setActiveTab("jobseeker")}
               disabled={isLoading || isGoogleLoading}
@@ -354,7 +301,9 @@ const Registration = () => {
             <button
               type="button"
               className={`px-6 py-3 text-sm font-medium rounded-r-lg ${
-                activeTab === "recruiter" ? "z-10 ring-2 ring-blue-500 text-blue-700" : "bg-white text-gray-700 hover:bg-gray-50"
+                activeTab === "recruiter"
+                  ? "z-10 ring-2 ring-blue-500 text-blue-700"
+                  : "bg-white text-gray-700 hover:bg-gray-50"
               } border border-gray-200`}
               onClick={() => setActiveTab("recruiter")}
               disabled={isLoading || isGoogleLoading}
@@ -368,10 +317,16 @@ const Registration = () => {
           <div className="md:grid md:grid-cols-2">
             {/* Left side - Image */}
             <div className="hidden md:block relative">
-              <img src={ activeTab === "jobseeker" ? interviewImg : recruiteImg} alt="Registration" className="h-full w-full object-cover" />
+              <img
+                src={activeTab === "jobseeker" ? interviewImg : recruiteImg}
+                alt="Registration"
+                className="h-full w-full object-cover"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-8">
                 <h2 className="text-white text-3xl font-bold mb-2">
-                  {activeTab === "jobseeker" ? "Find Your Dream Job" : "Hire Top Talent"}
+                  {activeTab === "jobseeker"
+                    ? "Find Your Dream Job"
+                    : "Hire Top Talent"}
                 </h2>
                 <p className="text-white/90 text-lg">
                   {activeTab === "jobseeker"
@@ -385,7 +340,9 @@ const Registration = () => {
             <div className="p-8">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">
-                  {activeTab === "jobseeker" ? "Job Seeker Registration" : "Recruiter Registration"}
+                  {activeTab === "jobseeker"
+                    ? "Job Seeker Registration"
+                    : "Recruiter Registration"}
                 </h2>
                 <p className="mt-1 text-sm text-gray-600">
                   {activeTab === "jobseeker"
@@ -398,7 +355,10 @@ const Registration = () => {
               {activeTab === "jobseeker" && (
                 <form onSubmit={handleJobSeekerRegister} className="space-y-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Full Name*
                     </label>
                     <input
@@ -413,7 +373,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Email*
                     </label>
                     <input
@@ -428,7 +391,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="photo" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="photo"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Profile Picture*
                     </label>
                     <input
@@ -443,7 +409,10 @@ const Registration = () => {
                   </div>
 
                   <div className="relative">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Password*
                     </label>
                     <div className="mt-1 relative rounded-md shadow-sm">
@@ -469,7 +438,8 @@ const Registration = () => {
                       </button>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
-                      Password must be at least 6 characters with 1 capital letter, 1 number, and 1 special character.
+                      Password must be at least 6 characters with 1 capital
+                      letter, 1 number, and 1 special character.
                     </p>
                   </div>
 
@@ -512,7 +482,9 @@ const Registration = () => {
                       <div className="w-full border-t border-gray-300"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                      <span className="px-2 bg-white text-gray-500">
+                        Or continue with
+                      </span>
                     </div>
                   </div>
 
@@ -577,7 +549,10 @@ const Registration = () => {
               {activeTab === "recruiter" && (
                 <form onSubmit={handleRecruiterRegister} className="space-y-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Full Name*
                     </label>
                     <input
@@ -592,7 +567,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Email*
                     </label>
                     <input
@@ -607,7 +585,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="companyName"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Company Name*
                     </label>
                     <input
@@ -622,7 +603,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="position" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="position"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Position*
                     </label>
                     <input
@@ -637,7 +621,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="website"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Company Website*
                     </label>
                     <input
@@ -652,7 +639,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="logo" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="logo"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Company Logo*
                     </label>
                     <input
@@ -667,7 +657,10 @@ const Registration = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="photo" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="photo"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Your Picture*
                     </label>
                     <input
@@ -682,7 +675,10 @@ const Registration = () => {
                   </div>
 
                   <div className="relative">
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium text-gray-700"
+                    >
                       Password*
                     </label>
                     <div className="mt-1 relative rounded-md shadow-sm">
@@ -708,7 +704,8 @@ const Registration = () => {
                       </button>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
-                      Password must be at least 6 characters with 1 capital letter, 1 number, and 1 special character.
+                      Password must be at least 6 characters with 1 capital
+                      letter, 1 number, and 1 special character.
                     </p>
                   </div>
 
@@ -751,7 +748,11 @@ const Registration = () => {
               <div className="mt-6 text-center text-sm">
                 <p className="text-gray-600">
                   Already have an account?{" "}
-                  <Link to="/login" state={location?.state} className="font-medium text-blue-600 hover:text-blue-500">
+                  <Link
+                    to="/login"
+                    state={location?.state}
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
                     Sign in
                   </Link>
                 </p>
@@ -761,7 +762,7 @@ const Registration = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Registration
+export default Registration;
