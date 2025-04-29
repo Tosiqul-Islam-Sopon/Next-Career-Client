@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useContext, useState } from "react"
-import { useForm } from "react-hook-form"
-import { AuthContext } from "../../../Providers/AuthProvider"
-import { useQuery } from "@tanstack/react-query"
-import useAxiosBase from "../../../CustomHooks/useAxiosBase"
-import Swal from "sweetalert2"
-import { useNavigate } from "react-router-dom"
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+import { AuthContext } from "../../../Providers/AuthProvider";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import {
   MdBusinessCenter,
   MdDescription,
@@ -23,12 +23,12 @@ import {
   MdArrowUpward,
   MdArrowDownward,
   MdInfo,
-} from "react-icons/md"
+} from "react-icons/md";
 
 const JobPostForm = () => {
-  const { user } = useContext(AuthContext)
-  const axiosBase = useAxiosBase()
-  const navigate = useNavigate()
+  const { user } = useContext(AuthContext);
+  const axiosBase = useAxiosBase();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -36,25 +36,30 @@ const JobPostForm = () => {
     formState: { errors },
     reset,
     watch,
-  } = useForm()
+  } = useForm();
 
   const { data: userInfo = null, isLoading } = useQuery({
     queryKey: ["user", user?.email],
     queryFn: async () => {
-      const response = await axiosBase.get(`/user-by-email/${user?.email}`)
-      return response.data
+      const response = await axiosBase.get(`/user-by-email/${user?.email}`);
+      return response.data;
     },
-  })
+  });
 
   // ✅ Fixed stages
-  const fixedFirstStage = "CV Screening"
-  const fixedLastStage = "Hire"
+  const fixedFirstStage = "CV Screening";
+  const fixedLastStage = "Hire";
 
   // ✅ Editable stages
-  const predefinedEditableStages = ["Initial Interview", "Technical Test", "Technical Interview", "HR Interview"]
+  const predefinedEditableStages = [
+    "Initial Interview",
+    "Technical Test",
+    "Technical Interview",
+    "HR Interview",
+  ];
 
-  const [selectedEditableStages, setSelectedEditableStages] = useState([])
-  const jobLocation = watch("jobLocation")
+  const [selectedEditableStages, setSelectedEditableStages] = useState([]);
+  const jobLocation = watch("jobLocation");
 
   if (isLoading) {
     return (
@@ -64,10 +69,10 @@ const JobPostForm = () => {
           <p className="text-gray-600 font-medium">Loading form...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  const { _id: jobPosterId, companyName, companyLogo, website } = userInfo
+  const { _id: jobPosterId, companyName, companyLogo, website } = userInfo;
 
   const onSubmit = async (data) => {
     try {
@@ -76,65 +81,73 @@ const JobPostForm = () => {
         Swal.fire({
           icon: "error",
           title: "Please select at least one middle recruitment stage.",
-        })
-        return
+        });
+        return;
       }
 
       // ✅ Combine stages: first + selected + last
-      const combinedStages = [fixedFirstStage, ...selectedEditableStages, fixedLastStage]
+      const combinedStages = [
+        fixedFirstStage,
+        ...selectedEditableStages,
+        fixedLastStage,
+      ];
 
       const companyInfo = {
         companyName,
         companyLogo,
         website,
-      }
+      };
 
       const userInfo = {
         name: user.displayName,
         email: user.email,
         photo: user.photoURL,
-      }
+      };
 
       const jobData = {
         ...data,
         postedBy: jobPosterId,
         companyInfo,
         userInfo,
-        date: new Date().toISOString(),
+        date: new Date(),
+        deadline: new Date(data.deadline),
         view: 0,
         recruitmentStages: combinedStages,
-      }
+      };
 
-      await axiosBase.post("/jobs", jobData)
-      reset()
-      setSelectedEditableStages([]) // Reset stages after submit
+      await axiosBase.post("/jobs", jobData);
+      reset();
+      setSelectedEditableStages([]); // Reset stages after submit
       Swal.fire({
         position: "center",
         icon: "success",
         title: "Job Posted Successfully",
         showConfirmButton: false,
         timer: 1500,
-      })
-      navigate("/")
+      });
+      navigate("/");
     } catch (error) {
-      console.error("Error posting job:", error)
+      console.error("Error posting job:", error);
       Swal.fire({
         position: "center",
         icon: "error",
         title: "Sorry! Something went wrong",
         showConfirmButton: false,
         timer: 1500,
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Post a New Job</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Post a New Job
+          </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Fill out the form below to create a new job listing. Fields marked with an asterisk (*) are required.
+            Fill out the form below to create a new job listing. Fields marked
+            with an asterisk (*) are required.
           </p>
         </div>
 
@@ -151,7 +164,9 @@ const JobPostForm = () => {
                   />
                 ) : (
                   <div className="h-16 w-16 rounded-full bg-white flex items-center justify-center">
-                    <span className="text-blue-600 text-xl font-bold">{companyName.charAt(0)}</span>
+                    <span className="text-blue-600 text-xl font-bold">
+                      {companyName.charAt(0)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -184,12 +199,18 @@ const JobPostForm = () => {
                   </div>
                   <input
                     type="text"
-                    {...register("jobTitle", { required: "Job title is required" })}
+                    {...register("jobTitle", {
+                      required: "Job title is required",
+                    })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="e.g. Senior Software Engineer"
                   />
                 </div>
-                {errors.jobTitle && <p className="mt-1 text-sm text-red-600">{errors.jobTitle.message}</p>}
+                {errors.jobTitle && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobTitle.message}
+                  </p>
+                )}
               </div>
 
               {/* Job Position */}
@@ -203,12 +224,18 @@ const JobPostForm = () => {
                   </div>
                   <input
                     type="text"
-                    {...register("jobPosition", { required: "Job position is required" })}
+                    {...register("jobPosition", {
+                      required: "Job position is required",
+                    })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="e.g. Junior, Mid-level, Senior"
                   />
                 </div>
-                {errors.jobPosition && <p className="mt-1 text-sm text-red-600">{errors.jobPosition.message}</p>}
+                {errors.jobPosition && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobPosition.message}
+                  </p>
+                )}
               </div>
 
               {/* Job Description */}
@@ -221,13 +248,19 @@ const JobPostForm = () => {
                     <MdDescription className="h-5 w-5 text-gray-400" />
                   </div>
                   <textarea
-                    {...register("jobDescription", { required: "Job description is required" })}
+                    {...register("jobDescription", {
+                      required: "Job description is required",
+                    })}
                     rows={5}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Describe the role, responsibilities, and what the candidate will be doing"
                   ></textarea>
                 </div>
-                {errors.jobDescription && <p className="mt-1 text-sm text-red-600">{errors.jobDescription.message}</p>}
+                {errors.jobDescription && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobDescription.message}
+                  </p>
+                )}
               </div>
 
               {/* Requirements */}
@@ -240,14 +273,18 @@ const JobPostForm = () => {
                     <MdAssignment className="h-5 w-5 text-gray-400" />
                   </div>
                   <textarea
-                    {...register("jobRequirements", { required: "Job requirements are required" })}
+                    {...register("jobRequirements", {
+                      required: "Job requirements are required",
+                    })}
                     rows={4}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="List the skills, experience, and qualifications required for this role"
                   ></textarea>
                 </div>
                 {errors.jobRequirements && (
-                  <p className="mt-1 text-sm text-red-600">{errors.jobRequirements.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobRequirements.message}
+                  </p>
                 )}
               </div>
 
@@ -261,14 +298,18 @@ const JobPostForm = () => {
                     <MdSchool className="h-5 w-5 text-gray-400" />
                   </div>
                   <textarea
-                    {...register("jobQualifications", { required: "Job qualifications are required" })}
+                    {...register("jobQualifications", {
+                      required: "Job qualifications are required",
+                    })}
                     rows={4}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Specify education, certifications, or other qualifications needed"
                   ></textarea>
                 </div>
                 {errors.jobQualifications && (
-                  <p className="mt-1 text-sm text-red-600">{errors.jobQualifications.message}</p>
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobQualifications.message}
+                  </p>
                 )}
               </div>
 
@@ -282,7 +323,9 @@ const JobPostForm = () => {
                     <MdCategory className="h-5 w-5 text-gray-400" />
                   </div>
                   <select
-                    {...register("jobCategory", { required: "Job category is required" })}
+                    {...register("jobCategory", {
+                      required: "Job category is required",
+                    })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 appearance-none bg-none"
                   >
                     <option value="">Select a category</option>
@@ -291,14 +334,20 @@ const JobPostForm = () => {
                     <option value="Design">Design</option>
                     <option value="SoftwareEngineer">Software Engineer</option>
                     <option value="Data Science">Data Science</option>
-                    <option value="Product Management">Product Management</option>
+                    <option value="Product Management">
+                      Product Management
+                    </option>
                     <option value="Customer Service">Customer Service</option>
                     <option value="Sales">Sales</option>
                     <option value="Finance">Finance</option>
                     <option value="Human Resources">Human Resources</option>
                   </select>
                 </div>
-                {errors.jobCategory && <p className="mt-1 text-sm text-red-600">{errors.jobCategory.message}</p>}
+                {errors.jobCategory && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobCategory.message}
+                  </p>
+                )}
               </div>
 
               {/* Job Type */}
@@ -311,7 +360,9 @@ const JobPostForm = () => {
                     <MdWorkOutline className="h-5 w-5 text-gray-400" />
                   </div>
                   <select
-                    {...register("jobType", { required: "Job type is required" })}
+                    {...register("jobType", {
+                      required: "Job type is required",
+                    })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 appearance-none bg-none"
                   >
                     <option value="">Select job type</option>
@@ -323,7 +374,11 @@ const JobPostForm = () => {
                     <option value="Freelance">Freelance</option>
                   </select>
                 </div>
-                {errors.jobType && <p className="mt-1 text-sm text-red-600">{errors.jobType.message}</p>}
+                {errors.jobType && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobType.message}
+                  </p>
+                )}
               </div>
 
               {/* Job Location */}
@@ -336,7 +391,9 @@ const JobPostForm = () => {
                     <MdLocationOn className="h-5 w-5 text-gray-400" />
                   </div>
                   <select
-                    {...register("jobLocation", { required: "Job location is required" })}
+                    {...register("jobLocation", {
+                      required: "Job location is required",
+                    })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 appearance-none bg-none"
                   >
                     <option value="">Select location type</option>
@@ -345,7 +402,11 @@ const JobPostForm = () => {
                     <option value="Hybrid">Hybrid</option>
                   </select>
                 </div>
-                {errors.jobLocation && <p className="mt-1 text-sm text-red-600">{errors.jobLocation.message}</p>}
+                {errors.jobLocation && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.jobLocation.message}
+                  </p>
+                )}
               </div>
 
               {/* Location Details - Only show if not Remote */}
@@ -361,13 +422,20 @@ const JobPostForm = () => {
                     <input
                       type="text"
                       {...register("onSitePlace", {
-                        required: jobLocation !== "Remote" ? "Location details are required" : false,
+                        required:
+                          jobLocation !== "Remote"
+                            ? "Location details are required"
+                            : false,
                       })}
                       className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       placeholder="e.g. New York, NY or London, UK"
                     />
                   </div>
-                  {errors.onSitePlace && <p className="mt-1 text-sm text-red-600">{errors.onSitePlace.message}</p>}
+                  {errors.onSitePlace && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.onSitePlace.message}
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -384,13 +452,20 @@ const JobPostForm = () => {
                     type="number"
                     {...register("salary", {
                       required: "Salary is required",
-                      min: { value: 0, message: "Salary must be a positive number" },
+                      min: {
+                        value: 0,
+                        message: "Salary must be a positive number",
+                      },
                     })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="e.g. 75000"
                   />
                 </div>
-                {errors.salary && <p className="mt-1 text-sm text-red-600">{errors.salary.message}</p>}
+                {errors.salary && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.salary.message}
+                  </p>
+                )}
               </div>
 
               {/* Vacancy */}
@@ -406,13 +481,20 @@ const JobPostForm = () => {
                     type="number"
                     {...register("vacancy", {
                       required: "Number of vacancies is required",
-                      min: { value: 1, message: "At least 1 vacancy is required" },
+                      min: {
+                        value: 1,
+                        message: "At least 1 vacancy is required",
+                      },
                     })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="e.g. 2"
                   />
                 </div>
-                {errors.vacancy && <p className="mt-1 text-sm text-red-600">{errors.vacancy.message}</p>}
+                {errors.vacancy && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.vacancy.message}
+                  </p>
+                )}
               </div>
 
               {/* Deadline */}
@@ -429,16 +511,23 @@ const JobPostForm = () => {
                     {...register("deadline", {
                       required: "Application deadline is required",
                       validate: (value) => {
-                        const selectedDate = new Date(value)
-                        const today = new Date()
-                        today.setHours(0, 0, 0, 0)
-                        return selectedDate >= today || "Deadline must be today or in the future"
+                        const selectedDate = new Date(value);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        return (
+                          selectedDate >= today ||
+                          "Deadline must be today or in the future"
+                        );
                       },
                     })}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                {errors.deadline && <p className="mt-1 text-sm text-red-600">{errors.deadline.message}</p>}
+                {errors.deadline && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.deadline.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -446,43 +535,59 @@ const JobPostForm = () => {
             <div className="pt-4 border-t border-gray-200">
               <div className="flex items-center mb-4">
                 <MdTimeline className="h-5 w-5 text-blue-600 mr-2" />
-                <h3 className="text-lg font-medium text-gray-900">Recruitment Process</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Recruitment Process
+                </h3>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
                 <div className="flex items-center mb-2">
                   <MdInfo className="h-5 w-5 text-blue-600 mr-2" />
                   <p className="text-sm text-gray-700">
-                    Select and arrange the stages of your recruitment process. The first and last stages are fixed.
+                    Select and arrange the stages of your recruitment process.
+                    The first and last stages are fixed.
                   </p>
                 </div>
 
                 <div className="flex items-center bg-blue-50 p-3 rounded-md mb-4">
                   <MdCheck className="h-5 w-5 text-blue-600 mr-2" />
-                  <span className="text-sm font-medium text-blue-800">Fixed First Stage: {fixedFirstStage}</span>
+                  <span className="text-sm font-medium text-blue-800">
+                    Fixed First Stage: {fixedFirstStage}
+                  </span>
                 </div>
 
                 {/* Editable stages */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                   {predefinedEditableStages.map((stage) => (
-                    <div key={stage} className="flex items-center bg-white p-3 rounded-md border border-gray-200">
+                    <div
+                      key={stage}
+                      className="flex items-center bg-white p-3 rounded-md border border-gray-200"
+                    >
                       <input
                         type="checkbox"
                         id={`stage-${stage}`}
                         value={stage}
                         checked={selectedEditableStages.includes(stage)}
                         onChange={(e) => {
-                          const value = e.target.value
-                          const isChecked = e.target.checked
+                          const value = e.target.value;
+                          const isChecked = e.target.checked;
                           if (isChecked) {
-                            setSelectedEditableStages((prev) => [...prev, value])
+                            setSelectedEditableStages((prev) => [
+                              ...prev,
+                              value,
+                            ]);
                           } else {
-                            setSelectedEditableStages((prev) => prev.filter((s) => s !== value))
+                            setSelectedEditableStages((prev) =>
+                              prev.filter((s) => s !== value)
+                            );
                           }
                         }}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
-                      <label htmlFor={`stage-${stage}`} className="ml-2 block text-sm text-gray-700">
+                      <label
+                        htmlFor={`stage-${stage}`}
+                        className="ml-2 block text-sm text-gray-700"
+                      >
                         {stage}
                       </label>
                     </div>
@@ -492,7 +597,9 @@ const JobPostForm = () => {
                 {/* Selected stages order */}
                 {selectedEditableStages.length > 0 && (
                   <div className="bg-white p-4 rounded-md border border-gray-200">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Selected Stages Order:</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">
+                      Selected Stages Order:
+                    </h4>
                     <ul className="space-y-2">
                       {selectedEditableStages.map((stage, index) => (
                         <li
@@ -500,16 +607,22 @@ const JobPostForm = () => {
                           className="flex items-center justify-between bg-gray-50 p-2 rounded-md border border-gray-100"
                         >
                           <span className="text-sm text-gray-700">
-                            <span className="font-medium text-blue-600">{index + 1}.</span> {stage}
+                            <span className="font-medium text-blue-600">
+                              {index + 1}.
+                            </span>{" "}
+                            {stage}
                           </span>
                           <div className="flex space-x-1">
                             <button
                               type="button"
                               disabled={index === 0}
                               onClick={() => {
-                                const newStages = [...selectedEditableStages]
-                                ;[newStages[index - 1], newStages[index]] = [newStages[index], newStages[index - 1]]
-                                setSelectedEditableStages(newStages)
+                                const newStages = [...selectedEditableStages];
+                                [newStages[index - 1], newStages[index]] = [
+                                  newStages[index],
+                                  newStages[index - 1],
+                                ];
+                                setSelectedEditableStages(newStages);
                               }}
                               className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-500"
                             >
@@ -517,11 +630,16 @@ const JobPostForm = () => {
                             </button>
                             <button
                               type="button"
-                              disabled={index === selectedEditableStages.length - 1}
+                              disabled={
+                                index === selectedEditableStages.length - 1
+                              }
                               onClick={() => {
-                                const newStages = [...selectedEditableStages]
-                                ;[newStages[index], newStages[index + 1]] = [newStages[index + 1], newStages[index]]
-                                setSelectedEditableStages(newStages)
+                                const newStages = [...selectedEditableStages];
+                                [newStages[index], newStages[index + 1]] = [
+                                  newStages[index + 1],
+                                  newStages[index],
+                                ];
+                                setSelectedEditableStages(newStages);
                               }}
                               className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-500"
                             >
@@ -536,12 +654,16 @@ const JobPostForm = () => {
 
                 <div className="flex items-center bg-blue-50 p-3 rounded-md mt-4">
                   <MdCheck className="h-5 w-5 text-blue-600 mr-2" />
-                  <span className="text-sm font-medium text-blue-800">Fixed Last Stage: {fixedLastStage}</span>
+                  <span className="text-sm font-medium text-blue-800">
+                    Fixed Last Stage: {fixedLastStage}
+                  </span>
                 </div>
               </div>
 
               {selectedEditableStages.length === 0 && (
-                <p className="text-sm text-red-600 mb-4">Please select at least one recruitment stage.</p>
+                <p className="text-sm text-red-600 mb-4">
+                  Please select at least one recruitment stage.
+                </p>
               )}
             </div>
 
@@ -567,7 +689,7 @@ const JobPostForm = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default JobPostForm
+export default JobPostForm;
