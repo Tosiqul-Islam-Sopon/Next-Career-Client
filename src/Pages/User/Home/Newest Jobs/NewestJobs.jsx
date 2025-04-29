@@ -22,7 +22,6 @@ const NewestJobs = () => {
 
   const jobs = data?.jobs || []
   const totalPages = data?.totalPages || 1
-  const totalJobs = data?.totalJobs || 0
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -101,7 +100,7 @@ const NewestJobs = () => {
               <p className="text-gray-600">
                 {isLoading
                   ? "Finding opportunities..."
-                  : `Showing ${jobs.length} of ${totalJobs} recently posted positions`}
+                  : `Showing ${jobs.length} recently posted positions`}
               </p>
             </div>
             <div className="mt-4 md:mt-0">

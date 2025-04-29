@@ -22,7 +22,6 @@ const FeaturedJobs = () => {
 
   const jobs = data?.jobs || []
   const totalPages = data?.totalPages || 1
-  const totalJobs = data?.totalJobs || 0
 
   const handleNextPage = () => {
     if (page < totalPages) {
@@ -102,7 +101,7 @@ const FeaturedJobs = () => {
                 <MdStarOutline className="ml-2 text-yellow-500 h-6 w-6" />
               </div>
               <p className="text-gray-600">
-                {isLoading ? "Finding opportunities..." : `Showing ${jobs.length} of ${totalJobs} featured positions`}
+                {isLoading ? "Finding opportunities..." : `Showing ${jobs.length} featured positions`}
               </p>
             </div>
             <div className="mt-4 md:mt-0">
