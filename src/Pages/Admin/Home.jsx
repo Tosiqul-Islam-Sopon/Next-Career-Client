@@ -12,6 +12,7 @@ import { AuthContext } from "../../Providers/AuthProvider";
 import { Link } from "react-router-dom";
 import useAxiosBase from "../../CustomHooks/useAxiosBase";
 import Swal from "sweetalert2";
+import FullScreenLoader from "../Shared/Loaders/FullScreenLoader";
 
 const AdminHome = () => {
   const { logOut } = useContext(AuthContext);
@@ -62,7 +63,7 @@ const AdminHome = () => {
   };
 
   if (loading) {
-    return <div className="mt-20 w-fit mx-auto">Loading............</div>;
+    return <FullScreenLoader />;
   }
 
   return (
