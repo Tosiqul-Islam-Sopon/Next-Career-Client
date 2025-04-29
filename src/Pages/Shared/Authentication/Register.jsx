@@ -18,7 +18,7 @@ const Registration = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { createUser, setNameAndPhoto, googleSignIn, sendVerificationEmail } =
+  const { createUser, setNameAndPhoto, googleSignIn, sendVerificationEmail, logOut } =
     useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -114,6 +114,8 @@ const Registration = () => {
         showConfirmButton: true,
         timer: 10000,
       });
+
+      await logOut();
 
       setIsLoading(false);
 
@@ -215,6 +217,8 @@ const Registration = () => {
         showConfirmButton: true,
         timer: 10000,
       });
+
+      await logOut();
 
       setIsLoading(false);
 
