@@ -2,7 +2,7 @@
 
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Calendar,
   Clock,
@@ -21,9 +21,10 @@ import {
 } from "lucide-react";
 import useUserRole from "../../../CustomHooks/useUserRole";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import { AuthContext } from "../../../Providers/AuthProvider";
 
 const InterviewSchedules = () => {
-  const { userId } = useParams();
+  const { user } = useContext(AuthContext);
   const { userRole } = useUserRole();
   const axiosBase = useAxiosBase();
   const [jobs, setJobs] = useState([]);
@@ -36,16 +37,23 @@ const InterviewSchedules = () => {
   // Get current date for calendar navigation
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
-  const { data: schedules, isLoading } = useQuery({
-    queryKey: ["schedules", userId],
+  const { data: userInfo = null, isLoading: isUserLoading } = useQuery({
+    queryKey: ["user", user?.email],
     queryFn: async () => {
-      const fetchLink =
-        userRole === "recruiter"
-          ? `/job/schedules/recruiter/${userId}`
-          : `/job/schedules/candidate/${userId}`;
+      const response = await axiosBase.get(`/user-by-email/${user?.email}`);
+      return response.data;
+    },
+    enabled: !!user?.email,
+  });
+
+  const { data: schedules, isLoading } = useQuery({
+    queryKey: ["schedules", userInfo?._id],
+    queryFn: async () => {
+      const fetchLink = `/job/schedules/recruiter/${userInfo?._id}`;
       const res = await axiosBase.get(fetchLink);
       return res.data;
     },
+    enabled: !!userInfo?._id,
   });
 
   useEffect(() => {
@@ -249,7 +257,7 @@ const InterviewSchedules = () => {
     ).length,
   };
 
-  if (isLoading || isJobFetchLoading) {
+  if (isLoading || isJobFetchLoading || isUserLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="relative">
