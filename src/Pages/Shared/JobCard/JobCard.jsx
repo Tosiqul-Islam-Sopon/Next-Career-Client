@@ -1,79 +1,105 @@
-"use client"
+"use client";
 
-import PropTypes from "prop-types"
-import { PiOfficeChairLight, PiEyeBold } from "react-icons/pi"
-import { MdGroups, MdLocationOn, MdCalendarToday, MdAttachMoney, MdWorkOutline } from "react-icons/md"
-import { Link } from "react-router-dom"
-import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase"
-import { useEffect, useState } from "react"
-import { io } from "socket.io-client"
+import PropTypes from "prop-types";
+import { PiOfficeChairLight, PiEyeBold } from "react-icons/pi";
+import {
+  MdGroups,
+  MdLocationOn,
+  MdCalendarToday,
+  MdAttachMoney,
+  MdWorkOutline,
+} from "react-icons/md";
+import { Link } from "react-router-dom";
+import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
-const socket = io(baseUrl)
+const socket = io(baseUrl);
 
 const JobCard = ({ job }) => {
-  const { _id, jobTitle, jobPosition, salary, deadline, companyInfo, jobLocation, onSitePlace, vacancy, view } = job
-  const { companyName, companyLogo } = companyInfo
-  const axiosBase = useAxiosBase()
+  const {
+    _id,
+    jobTitle,
+    jobPosition,
+    salary,
+    deadline,
+    companyInfo,
+    jobLocation,
+    onSitePlace,
+    vacancy,
+    view,
+  } = job;
+  const { companyName, companyLogo } = companyInfo;
+  const axiosBase = useAxiosBase();
 
-  const [totalApplicants, setTotalApplicants] = useState(0)
-  const [viewCount, setViewCount] = useState(view || 0)
+  const [totalApplicants, setTotalApplicants] = useState(0);
+  const [viewCount, setViewCount] = useState(view || 0);
 
   useEffect(() => {
     // Listen for updates
     socket.on("jobViewIncremented", (data) => {
       if (data.jobId === _id) {
         // Update only if it's this job's ID
-        setViewCount(data.newViewCount)
+        setViewCount(data.newViewCount);
       }
-    })
+    });
 
     // Cleanup listener on unmount
     return () => {
-      socket.off("jobViewIncremented")
-    }
-  }, [_id])
+      socket.off("jobViewIncremented");
+    };
+  }, [_id]);
 
   useEffect(() => {
     const loadTotalApplicants = async () => {
-      const response = await axiosBase.get(`/jobs/totalApplicants/${_id}`)
-      setTotalApplicants(response.data.totalApplicants)
-    }
-    loadTotalApplicants()
-  }, [axiosBase, _id])
+      const response = await axiosBase.get(`/jobs/totalApplicants/${_id}`);
+      setTotalApplicants(response.data.totalApplicants);
+    };
+    loadTotalApplicants();
+  }, [axiosBase, _id]);
 
   const handleViewCount = async (jobId) => {
     try {
-      await axiosBase.patch(`/jobs/incrementView/${jobId}`)
+      await axiosBase.patch(`/jobs/incrementView/${jobId}`);
     } catch (error) {
-      console.error("Failed to increment view count", error)
+      console.error("Failed to increment view count", error);
     }
-  }
+  };
 
   // Format deadline to be more readable
   const formatDeadline = (dateString) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date instanceof Date && !isNaN(date)
-      ? date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-      : dateString
-  }
+      ? date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        })
+      : dateString;
+  };
 
   // Format salary with commas
   const formatSalary = (salaryString) => {
-    if (!salaryString) return "Competitive"
+    if (!salaryString) return "Competitive";
 
     // If it's already a number with commas or has special formatting, return as is
-    if (typeof salaryString === "string" && (salaryString.includes(",") || salaryString.includes("-"))) {
-      return `৳ ${salaryString}`
+    if (
+      typeof salaryString === "string" &&
+      (salaryString.includes(",") || salaryString.includes("-"))
+    ) {
+      return `৳ ${salaryString}`;
     }
 
     // Try to format as number with commas
     try {
-      const numericSalary = Number.parseFloat(salaryString.replace(/[^0-9.]/g, ""))
-      return `৳ ${numericSalary.toLocaleString()}`
+      const numericSalary = Number.parseFloat(
+        salaryString.replace(/[^0-9.]/g, "")
+      );
+      return `৳ ${numericSalary.toLocaleString()}`;
     } catch {
-      return `৳ ${salaryString}`
+      return `৳ ${salaryString}`;
     }
-  }
+  };
 
   return (
     <div className="overflow-hidden transition-all duration-300 hover:shadow-md bg-white border border-gray-200 rounded-lg">
@@ -83,12 +109,13 @@ const JobCard = ({ job }) => {
           <div className="flex-shrink-0 w-12 h-12 rounded-md overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center">
             {companyLogo ? (
               <img
+                loading="lazy"
                 className="w-full h-full object-contain"
                 src={companyLogo || "/placeholder.svg"}
                 alt={companyName}
                 onError={(e) => {
-                  e.target.src = "/placeholder.svg"
-                  e.target.alt = companyName.charAt(0)
+                  e.target.onerror = null;
+                  e.target.src = "/placeholder.svg";
                 }}
               />
             ) : (
@@ -98,7 +125,9 @@ const JobCard = ({ job }) => {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 truncate">{jobTitle}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 truncate">
+              {jobTitle}
+            </h3>
             <div className="flex items-center">
               <p className="text-sm text-gray-500">{companyName}</p>
               {jobPosition && (
@@ -132,7 +161,9 @@ const JobCard = ({ job }) => {
               <MdAttachMoney className="h-3.5 w-3.5 mr-1.5" />
               <span>Salary</span>
             </div>
-            <p className="text-sm font-medium text-gray-900">{formatSalary(salary)}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {formatSalary(salary)}
+            </p>
           </div>
 
           <div className="space-y-1">
@@ -150,7 +181,9 @@ const JobCard = ({ job }) => {
               <MdCalendarToday className="h-3.5 w-3.5 mr-1.5" />
               <span>Deadline</span>
             </div>
-            <p className="text-sm font-medium text-gray-900">{formatDeadline(deadline)}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {formatDeadline(deadline)}
+            </p>
           </div>
         </div>
 
@@ -183,7 +216,9 @@ const JobCard = ({ job }) => {
             </div>
             <div>
               <p className="text-xs text-gray-500">Applied</p>
-              <p className="text-sm font-semibold text-gray-900">{totalApplicants}</p>
+              <p className="text-sm font-semibold text-gray-900">
+                {totalApplicants}
+              </p>
             </div>
           </div>
         </div>
@@ -201,11 +236,11 @@ const JobCard = ({ job }) => {
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default JobCard
+export default JobCard;
 
 JobCard.propTypes = {
   job: PropTypes.object.isRequired,
-}
+};

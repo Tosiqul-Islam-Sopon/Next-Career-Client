@@ -1,11 +1,10 @@
 "use client";
 
 import { useContext, useEffect, useState } from "react";
-import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "react-router-dom";
 import {
-  User,
   Phone,
   MapPin,
   Flag,
@@ -334,15 +333,16 @@ const UserProfile = () => {
               <div className="flex flex-col md:flex-row md:items-center mb-8 border-b border-gray-200 pb-6">
                 <div className="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
                   <div className="h-32 w-32 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center border border-gray-200">
-                    {userInfo?.profilePic ? (
-                      <img
-                        src={userInfo.profilePic || "/placeholder.svg"}
-                        alt={`${userInfo?.name}'s profile`}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-16 w-16 text-gray-300" />
-                    )}
+                    <img
+                      loading="lazy"
+                      className="h-full w-full object-cover"
+                      src={`${baseUrl}/profileImage/${userInfo._id}`}
+                      alt={`${userInfo.name}`}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.svg";
+                      }}
+                    />
                   </div>
                 </div>
                 <div className="flex-grow">

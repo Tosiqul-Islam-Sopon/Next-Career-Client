@@ -295,9 +295,14 @@ const Navbar = () => {
               <div className="relative" ref={rightDropdownRef}>
                 <button onClick={toggleRightDropdown}>
                   <img
-                    src={user?.photoURL}
+                    loading="lazy"
+                    src={`${baseUrl}/profileImage/${userInfo?._id}`}
                     className="w-14 h-14 rounded-full"
                     alt={`${user?.displayName} pic`}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder.svg";
+                    }}
                   />
                 </button>
                 {rightDropdownOpen && (

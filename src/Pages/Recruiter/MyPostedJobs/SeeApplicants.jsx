@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import useAxiosBase from "../../../CustomHooks/useAxiosBase";
+import useAxiosBase, { baseUrl } from "../../../CustomHooks/useAxiosBase";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -14,7 +14,6 @@ import {
   MapPin,
   Search,
   SlidersHorizontal,
-  User,
   Users,
 } from "lucide-react";
 
@@ -192,15 +191,15 @@ const SeeApplicants = () => {
                 <div className="px-6 pt-0 pb-6 relative">
                   <div className="flex flex-col items-center">
                     <div className="h-24 w-24 rounded-full border-4 border-white bg-white overflow-hidden -mt-12 shadow-md flex items-center justify-center">
-                      {applicant?.profilePic ? (
-                        <img
-                          className="h-full w-full object-cover"
-                          src={applicant.profilePic || "/placeholder.svg"}
-                          alt={`${applicant.name}`}
-                        />
-                      ) : (
-                        <User className="h-12 w-12 text-gray-300" />
-                      )}
+                      <img
+                        className="h-full w-full object-cover"
+                        src={`${baseUrl}/profileImage/${applicant._id}`}
+                        alt={`${applicant.name}`}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/placeholder.svg";
+                        }}
+                      />
                     </div>
                     <h2 className="text-xl font-bold text-gray-900 mt-3 text-center">
                       {applicant.name}
