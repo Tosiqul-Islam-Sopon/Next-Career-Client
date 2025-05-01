@@ -183,7 +183,7 @@ const MyPostedJobs = () => {
                 Manage and track all your job postings
               </p>
             </div>
-            <Link to="/post-job">
+            <Link to="/postJob">
               <button className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 <Plus className="h-5 w-5 mr-2" />
                 Post New Job

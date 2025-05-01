@@ -12,19 +12,28 @@ const Schedules = () => {
   const axiosBase = useAxiosBase();
   const [jobs, setJobs] = useState([]);
   const [isJobFeatchLoading, setIsJobFeatchLoading] = useState(false);
+  const [schedules, setSchedules] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: schedules, isLoading } = useQuery({
-    queryKey: ["schedules", userId],
-    queryFn: async () => {
+  useEffect(() => {
+    const fetchSchedules = async () => {
       const fetchLink =
         userRole === "recruiter"
           ? `/job/schedules/recruiter/${userId}`
           : `/job/schedules/candidate/${userId}`;
-      const res = await axiosBase.get(fetchLink);
-      console.log(res.data);
-      return res.data;
-    },
-  });
+      try{
+        setIsLoading(true);
+        const res = await axiosBase.get(fetchLink);
+        setSchedules(res.data);
+        setIsLoading(false);
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+      }
+    }
+
+    fetchSchedules();
+  }, [userRole, userId, axiosBase]);
 
   useEffect(() => {
     const fetchJobs = async () => {

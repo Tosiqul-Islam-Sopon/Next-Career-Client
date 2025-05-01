@@ -9,7 +9,6 @@ const Notifications = () => {
   const { user } = useContext(AuthContext);
   const axiosBase = useAxiosBase();
   const [notifications, setNotifications] = useState([]);
-  // console.log("fuck you........", notifications);
 
   // Fetch user info
   const { data: userInfo = null, isLoading } = useQuery({

@@ -192,7 +192,7 @@ const PostedJobs = () => {
           </div>
 
           <div className="mt-4 md:mt-0">
-            <Link to="/post-job">
+            <Link to="/postJob">
               <button className="flex items-center px-4 py-2 bg-orange-600 text-white font-medium rounded-md hover:bg-orange-700 transition-colors shadow-sm">
                 <Plus size={18} className="mr-2" />
                 Post New Job
@@ -355,7 +355,7 @@ const PostedJobs = () => {
           </p>
           <div className="flex items-center text-sm">
             <span className="text-slate-500">Quick actions:</span>
-            <Link to="/post-job" className="ml-3 text-orange-600 hover:text-orange-700 font-medium">
+            <Link to="/postJob" className="ml-3 text-orange-600 hover:text-orange-700 font-medium">
               Post New Job
             </Link>
             <Link to="/dashboard/statistics" className="ml-3 text-orange-600 hover:text-orange-700 font-medium">

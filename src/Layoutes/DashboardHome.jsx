@@ -215,7 +215,7 @@ export default function DashboardHome() {
                 </Link>
               ) : (
                 <Link
-                  to="/dashboard/postedJobs"
+                  to="/postJob"
                   className="inline-flex items-center px-4 py-2 bg-white text-orange-600 rounded-lg font-medium hover:bg-orange-50 transition-colors"
                 >
                   <Plus size={18} className="mr-2" />
@@ -550,7 +550,7 @@ export default function DashboardHome() {
                     Your Job Postings
                   </h2>
                   <Link
-                    to="#"
+                    to="/postJob"
                     className="text-sm text-orange-600 hover:text-orange-700 font-medium flex items-center"
                   >
                     <Plus size={16} className="mr-1" />
