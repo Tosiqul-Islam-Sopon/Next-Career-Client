@@ -56,108 +56,198 @@ const UserProfile = () => {
   const location = useLocation();
   const jobId = location.state?.jobId;
   const axiosBase = useAxiosBase();
+
+  /* ------------------ local UI state ------------------ */
   const [activeTab, setActiveTab] = useState("resume");
   const [notes, setNotes] = useState("");
   const [showHireConfirmation, setShowHireConfirmation] = useState(false);
-
-  const { data: recruiterInfo = null, isRecruiterLoading } = useQuery({
-    queryKey: ["user", user?.email],
-    queryFn: async () => {
-      const response = await axiosBase.get(`/user-by-email/${user?.email}`);
-      return response.data;
-    },
-  });
-
-  const { data: userInfo = null, isLoading } = useQuery({
-    queryKey: ["user", userId],
-    queryFn: async () => {
-      const response = await axiosBase.get(`/user/${userId}`);
-      return response.data;
-    },
-  });
-
-  // Fetch job data including recruitment stages
-  const { data: fetchedJobData = null, isLoading: jobLoading } = useQuery({
-    queryKey: ["job", jobId],
-    queryFn: async () => {
-      const response = await axiosBase.get(`/jobs/job/${jobId}`);
-      return response.data;
-    },
-    enabled: !!jobId,
-  });
-
-  const [jobData, setJobData] = useState(null);
-
-  // Sync fetched data into local state once loaded
-  useEffect(() => {
-    if (fetchedJobData) {
-      setJobData(fetchedJobData);
-    }
-  }, [fetchedJobData]);
-
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
+  /* --- NEW: localProgressStages mirrors backend data --- */
+  const [localProgressStages, setLocalProgressStages] = useState([]);
+
+  /* ---------------------------------------------------- */
+  /* queries (unchanged except for naming)               */
+  /* ---------------------------------------------------- */
+
+  const { data: recruiterInfo = null, isLoading: isRecruiterLoading } =
+    useQuery({
+      queryKey: ["user", user?.email],
+      queryFn: () =>
+        axiosBase.get(`/user-by-email/${user?.email}`).then((r) => r.data),
+      enabled: !!user?.email,
+    });
+
+  const { data: userInfo = null, isLoading } = useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => axiosBase.get(`/user/${userId}`).then((r) => r.data),
+    enabled: !!userId,
+  });
+
+  const { data: fetchedJobData = null, isLoading: jobLoading } = useQuery({
+    queryKey: ["job", jobId],
+    queryFn: () => axiosBase.get(`/jobs/job/${jobId}`).then((r) => r.data),
+    enabled: !!jobId,
+  });
+
+  const {
+    data: fetchedProgressStages = [],
+    isLoading: stageLoading,
+    refetch: progressRefetch,
+  } = useQuery({
+    queryKey: ["progressStages", userId, jobId],
+    queryFn: () =>
+      axiosBase
+        .get(`/applications/progressStages/${jobId}/${userId}`)
+        .then((r) => r.data.progressStages),
+    enabled: !!userId && !!jobId,
+  });
+
+  /* ----------------------------------------- */
+  /* sync remote progress into local state     */
+  /* ----------------------------------------- */
+  useEffect(() => {
+    setLocalProgressStages(fetchedProgressStages);
+  }, [fetchedProgressStages]);
+
+  /* ----------------------------------------- */
+  /* keep job data in local state if needed    */
+  /* ----------------------------------------- */
+  const [jobData, setJobData] = useState(null);
+  useEffect(() => {
+    if (fetchedJobData) setJobData(fetchedJobData);
+  }, [fetchedJobData]);
+
+  /* ========= helper ========= */
+  const formatDate = (d) => {
+    if (!d) return "Present";
+    const date = new Date(d);
+    return isNaN(date)
+      ? d
+      : date.toLocaleDateString("en-US", { year: "numeric", month: "short" });
+  };
+
+  /* ========= stage utilities ========= */
+  const pushStageOptimistic = (stage) => {
+    setLocalProgressStages((prev) =>
+      prev.includes(stage) ? prev : [...prev, stage]
+    );
+    setJobData((prev) => {
+      if (!prev) return prev;
+      const done = prev.completedStages || [];
+      return {
+        ...prev,
+        completedStages: done.includes(stage) ? done : [...done, stage],
+      };
+    });
+  };
+
+  const popStageRollback = () => {
+    setLocalProgressStages((prev) => prev.slice(0, -1));
+    setJobData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        completedStages: (prev.completedStages || []).slice(0, -1),
+      };
+    });
+  };
+
+  /* ========= actions ========= */
   const handleSelectForNextStep = () => {
-    if (!jobData || !jobData.recruitmentStages) return;
+    if (!jobData?.recruitmentStages) return;
+    const nextStage = jobData.recruitmentStages[localProgressStages.length];
+    if (!nextStage) return;
 
-    const totalStages = jobData?.recruitmentStages.length;
-    const nextStageIndex = jobData.completedStages?.length || 0;
+    nextStage.toLowerCase() === "hire"
+      ? setShowHireConfirmation(true)
+      : setShowDateTimePicker(true);
+  };
 
-    if (nextStageIndex >= totalStages) return;
-
-    const currentStage = jobData.recruitmentStages[nextStageIndex];
-
-    if (!currentStage) return;
-
-    if (currentStage.toLowerCase() === "hire") {
-      setShowHireConfirmation(true);
-    } else {
-      setShowDateTimePicker(true);
-    }
+  const advanceStageRequest = async (currentStage) => {
+    await axiosBase.patch(`/jobs/advanceStage/${jobId}/${userId}`, {
+      stage: currentStage,
+    });
+    await progressRefetch(); // keep query fresh
   };
 
   const handleHireConfirm = async () => {
-    if (!jobData || !jobData.recruitmentStages) return;
+    const currentStage = jobData?.recruitmentStages[localProgressStages.length];
+    if (!currentStage) return;
 
-    const nextStageIndex = jobData.completedStages?.length || 0;
-    const currentStage = jobData.recruitmentStages[nextStageIndex];
-
-    // ✅ Optimistically update UI
-    if (!jobData.completedStages) {
-      jobData.completedStages = [];
-    }
-    jobData.completedStages.push(currentStage);
-
-    setJobData({ ...jobData });
+    pushStageOptimistic(currentStage);
     setShowHireConfirmation(false);
 
     try {
-      await axiosBase.patch(`/jobs/advanceStage/${jobId}/${userId}`, {
-        stage: currentStage,
-      });
-
-      // Optionally: toast notification
+      await advanceStageRequest(currentStage);
       Swal.fire({
-        position: "center",
         icon: "success",
-        title: "Candidate has been hired successfully",
+        title: "Candidate hired",
+        timer: 2500,
         showConfirmButton: false,
-        timer: 3000,
       });
-    } catch (err) {
+    } catch {
+      popStageRollback();
       Swal.fire({
-        position: "center",
         icon: "error",
-        title: "Hiring failed. Please try again.",
+        title: "Hiring failed",
+        timer: 2000,
         showConfirmButton: false,
-        timer: 1500,
       });
-      // Revert if failed
-      jobData.completedStages.pop();
-      setJobData({ ...jobData });
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedDate || !startTime || !endTime) {
+      Swal.fire({
+        icon: "error",
+        title: "Complete all fields",
+        timer: 1800,
+        showConfirmButton: false,
+      });
+      return;
+    }
+    const currentStage = jobData?.recruitmentStages[localProgressStages.length];
+    const nextStage =
+      jobData?.recruitmentStages[localProgressStages.length + 1];
+    if (!currentStage) return;
+
+    pushStageOptimistic(currentStage);
+    setShowDateTimePicker(false);
+
+    try {
+      await advanceStageRequest(currentStage);
+      await axiosBase.post("/job/schedule", {
+        jobId,
+        recruiterId: recruiterInfo?._id,
+        candidateId: userId,
+        stageName: nextStage,
+        scheduledDate: selectedDate,
+        startTime,
+        endTime,
+        note: notes,
+      });
+      Swal.fire({
+        icon: "success",
+        title: "Candidate advanced",
+        timer: 2500,
+        showConfirmButton: false,
+      });
+      setSelectedDate("");
+      setStartTime("");
+      setEndTime("");
+      setNotes("");
+    } catch {
+      popStageRollback();
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+        timer: 2500,
+        showConfirmButton: false,
+      });
     }
   };
 
@@ -169,84 +259,7 @@ const UserProfile = () => {
     setNotes("");
   };
 
-  const handleSubmit = async () => {
-    if (!selectedDate || !startTime || !endTime) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: "Please fill all the required fields",
-        showConfirmButton: false,
-        timer: 2000,
-      });
-      return;
-    }
-
-    if (!jobData || !jobData.recruitmentStages) return;
-
-    const totalStages = jobData?.recruitmentStages.length;
-    const nextStageIndex = jobData.completedStages?.length || 0;
-
-    if (nextStageIndex >= totalStages) return;
-
-    const currentStage = jobData.recruitmentStages[nextStageIndex];
-    const nextStage = jobData.recruitmentStages[nextStageIndex + 1];
-
-    if (!currentStage) return;
-
-    // ✅ Optimistically update UI
-    if (!jobData.completedStages) {
-      jobData.completedStages = [];
-    }
-    jobData.completedStages.push(currentStage);
-
-    setJobData({ ...jobData });
-    setShowDateTimePicker(false);
-
-    try {
-      await axiosBase.patch(`/jobs/advanceStage/${jobId}/${userId}`, {
-        stage: currentStage,
-      });
-
-      await axiosBase.post("/job/schedule", {
-        jobId: jobId,
-        recruiterId: recruiterInfo?._id,
-        candidateId: userId,
-        stageName: nextStage,
-        scheduledDate: selectedDate,
-        startTime: startTime,
-        endTime: endTime,
-        note: notes,
-      });
-
-      // Reset form values
-      setSelectedDate("");
-      setStartTime("");
-      setEndTime("");
-      setNotes("");
-
-      // Optionally: toast notification
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Candidate has been selected for the next stage successfully",
-        showConfirmButton: false,
-        timer: 3000,
-      });
-    } catch (err) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: "Sorry! Something went wrong",
-        showConfirmButton: false,
-        timer: 3000,
-      });
-      // Revert if failed
-      jobData.completedStages.pop();
-      setJobData({ ...jobData });
-    }
-  };
-
-  if (isLoading || jobLoading || isRecruiterLoading) {
+  if (isLoading || jobLoading || isRecruiterLoading || stageLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center">
@@ -258,19 +271,6 @@ const UserProfile = () => {
       </div>
     );
   }
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "Present";
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-      });
-    } catch (e) {
-      return dateString;
-    }
-  };
 
   return (
     <div className="bg-gray-100 min-h-screen pt-24 pb-12">
@@ -740,7 +740,7 @@ const UserProfile = () => {
           <div className="bg-white rounded-lg shadow-sm mb-6 overflow-hidden">
             <RecruitmentProgressBar
               stages={jobData?.recruitmentStages}
-              completedStages={jobData?.completedStages || []}
+              completedStages={fetchedProgressStages || []}
             />
           </div>
         )}
