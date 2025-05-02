@@ -3,6 +3,7 @@ import { useLocation, Navigate } from "react-router-dom";
 import { useContext } from "react";
 import useUserRole from "../CustomHooks/useUserRole";
 import { AuthContext } from "../Providers/AuthProvider";
+import FullScreenLoader from "../Pages/Shared/Loaders/FullScreenLoader";
 
 const UserPrivateRoute = ({ children }) => {
   const { userRole, loading: roleLoading } = useUserRole();
@@ -12,16 +13,7 @@ const UserPrivateRoute = ({ children }) => {
   const isLoading = roleLoading || userLoading;
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center mt-28">
-        <div>
-          <span className="loading loading-ring loading-xs"></span>
-          <span className="loading loading-ring loading-sm"></span>
-          <span className="loading loading-ring loading-md"></span>
-          <span className="loading loading-ring loading-lg"></span>
-        </div>
-      </div>
-    );
+    return <FullScreenLoader />
   }
 
   if (!user || userRole !== "user") {
