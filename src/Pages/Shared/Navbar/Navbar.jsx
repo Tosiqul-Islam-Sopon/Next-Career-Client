@@ -288,7 +288,7 @@ const Navbar = () => {
                 </div>
                 {isNotificationDropdownOpen && (
                   //<div className="">
-                  <Notifications />
+                  <Notifications setUnreadNotifications={setUnreadNotifications} />
                   //</div>
                 )}
               </div>

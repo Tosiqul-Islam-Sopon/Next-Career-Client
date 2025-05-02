@@ -4,8 +4,9 @@ import useAxiosBase from "../../../CustomHooks/useAxiosBase";
 import { useQuery } from "@tanstack/react-query";
 
 import { Bell, CheckCircle, Clock } from "lucide-react";
+import PropTypes from "prop-types";
 
-const Notifications = () => {
+const Notifications = ({ setUnreadNotifications }) => {
   const { user } = useContext(AuthContext);
   const axiosBase = useAxiosBase();
   const [notifications, setNotifications] = useState([]);
@@ -24,7 +25,8 @@ const Notifications = () => {
   // Function to load unread notifications
   const loadUnreadNotifications = async (userId) => {
     const res = await axiosBase.get(`/notifications/unread/${userId}`);
-    return res.data.notifications;
+    setUnreadNotifications(res?.data?.notifications?.length);
+    return res?.data?.notifications;
   };
 
   // Mark notification as read
@@ -32,16 +34,13 @@ const Notifications = () => {
     try {
       if (!userInfo?._id) return;
 
-      // await axiosBase.put(`/notifications/mark-read/${notificationId}`)
-
-      // Update local state
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification._id === notificationId
-            ? { ...notification, read: true }
-            : notification
-        )
+      await axiosBase.patch(
+        `/notifications/mark-as-read/${notificationId}`
       );
+      // Update local state
+      const updatedNotifications = notifications.filter((notification) => notification._id !== notificationId);
+      setNotifications(updatedNotifications);
+      setUnreadNotifications(updatedNotifications.length);
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -52,12 +51,11 @@ const Notifications = () => {
     try {
       if (!userInfo?._id) return;
 
-      // await axiosBase.put(`/notifications/mark-all-read/${userInfo._id}`)
+      await axiosBase.patch(`/notifications/mark-all-as-read/${userInfo._id}`)
 
       // Update local state
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, read: true }))
-      );
+      setNotifications([]);
+      setUnreadNotifications(0);
     } catch (error) {
       console.error("Error marking all notifications as read:", error);
     }
@@ -149,7 +147,9 @@ const Notifications = () => {
                       <Bell className="h-5 w-5 text-gray-400" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm mb-1 text-gray-500">{notification.message}</p>
+                      <p className="text-sm mb-1 text-gray-500">
+                        {notification.message}
+                      </p>
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-gray-500">
                           {formatDate(notification.createdAt)}
@@ -188,3 +188,7 @@ const Notifications = () => {
 };
 
 export default Notifications;
+
+Notifications.propTypes = {
+  setUnreadNotifications: PropTypes.func.isRequired,
+};
