@@ -1,30 +1,20 @@
-"use client";
+"use client"
 
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../../Providers/AuthProvider";
-import { useQuery } from "@tanstack/react-query";
-import useAxiosBase from "../../../CustomHooks/useAxiosBase";
-import { Link } from "react-router-dom";
-import {
-  Briefcase,
-  MapPin,
-  Calendar,
-  Users,
-  Clock,
-  Search,
-  Edit,
-  Plus,
-  ArrowUpDown,
-} from "lucide-react";
-import RecruitmentProgressBar from "./RecruitmentProgressBar";
+import { useContext, useEffect, useState } from "react"
+import { AuthContext } from "../../../Providers/AuthProvider"
+import { useQuery } from "@tanstack/react-query"
+import useAxiosBase from "../../../CustomHooks/useAxiosBase"
+import { Link } from "react-router-dom"
+import { Briefcase, MapPin, Calendar, Users, Clock, Search, Edit, Plus, ArrowUpDown, CheckCircle } from "lucide-react"
+import RecruitmentProgressBar from "./RecruitmentProgressBar"
 
 const MyPostedJobs = () => {
-  const { user } = useContext(AuthContext);
-  const axiosBase = useAxiosBase();
+  const { user } = useContext(AuthContext)
+  const axiosBase = useAxiosBase()
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
-  const [applicantCounts, setApplicantCounts] = useState({});
+  const [searchTerm, setSearchTerm] = useState("")
+  const [sortBy, setSortBy] = useState("newest")
+  const [applicantCounts, setApplicantCounts] = useState({})
 
   // Fetch posted jobs by the recruiter
   const {
@@ -35,100 +25,92 @@ const MyPostedJobs = () => {
   } = useQuery({
     queryKey: ["myPostedJobs", user?.email],
     queryFn: async () => {
-      const response = await axiosBase.get(`/jobs/myPostedJobs/${user?.email}`);
-      return response.data;
+      const response = await axiosBase.get(`/jobs/myPostedJobs/${user?.email}`)
+      return response.data
     },
     enabled: !!user?.email,
-  });
+  })
 
   // Helper to fetch total applicants per job
   const fetchApplicantsCount = async (jobId) => {
     try {
-      const res = await axiosBase.get(`/jobs/totalApplicants/${jobId}`);
-      return res.data.totalApplicants || 0;
+      const res = await axiosBase.get(`/jobs/totalApplicants/${jobId}`)
+      return res.data.totalApplicants || 0
     } catch (error) {
-      return 0;
+      return 0
     }
-  };
+  }
 
   // Fetch applicant counts when jobs are loaded
   useEffect(() => {
     const loadCounts = async () => {
-      const counts = {};
+      const counts = {}
       for (const job of jobs) {
-        const count = await fetchApplicantsCount(job._id);
-        counts[job._id] = count;
+        const count = await fetchApplicantsCount(job._id)
+        counts[job._id] = count
       }
-      setApplicantCounts(counts);
-    };
+      setApplicantCounts(counts)
+    }
 
     if (jobs.length > 0) {
-      loadCounts();
+      loadCounts()
     }
-  }, [jobs]);
+  }, [jobs])
 
   // Search filter
   const filteredJobs = jobs.filter(
     (job) =>
       job.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.jobDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.jobLocation.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      job.jobLocation.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   // Sort logic
   const sortedJobs = [...filteredJobs].sort((a, b) => {
     if (sortBy === "newest") {
-      return (
-        new Date(b.createdAt || b.deadline) -
-        new Date(a.createdAt || a.deadline)
-      );
+      return new Date(b.createdAt || b.deadline) - new Date(a.createdAt || a.deadline)
     } else if (sortBy === "oldest") {
-      return (
-        new Date(a.createdAt || a.deadline) -
-        new Date(b.createdAt || b.deadline)
-      );
+      return new Date(a.createdAt || a.deadline) - new Date(b.createdAt || b.deadline)
     } else if (sortBy === "salary-high") {
-      return parseFloat(b.salary) - parseFloat(a.salary);
+      return Number.parseFloat(b.salary) - Number.parseFloat(a.salary)
     } else if (sortBy === "salary-low") {
-      return parseFloat(a.salary) - parseFloat(b.salary);
+      return Number.parseFloat(a.salary) - Number.parseFloat(b.salary)
     }
-    return 0;
-  });
+    return 0
+  })
 
   // Date formatter
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     return date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    });
-  };
+    })
+  }
 
   // Deadline countdown
   const getDaysRemaining = (deadline) => {
-    const today = new Date();
-    const deadlineDate = new Date(deadline);
-    const diffTime = deadlineDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const today = new Date()
+    const deadlineDate = new Date(deadline)
+    const diffTime = deadlineDate - today
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-    if (diffDays < 0) return "Expired";
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "1 day left";
-    return `${diffDays} days left`;
-  };
+    if (diffDays < 0) return "Expired"
+    if (diffDays === 0) return "Today"
+    if (diffDays === 1) return "1 day left"
+    return `${diffDays} days left`
+  }
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center">
           <div className="w-16 h-16 border-t-4 border-blue-600 border-solid rounded-full animate-spin"></div>
-          <p className="mt-4 text-lg text-gray-700">
-            Loading your posted jobs...
-          </p>
+          <p className="mt-4 text-lg text-gray-700">Loading your posted jobs...</p>
         </div>
       </div>
-    );
+    )
   }
 
   if (isError) {
@@ -151,12 +133,9 @@ const MyPostedJobs = () => {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Failed to Load Jobs
-          </h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Failed to Load Jobs</h2>
           <p className="text-gray-600 mb-4">
-            We couldn&apos;t load your posted jobs. Please try again later or contact
-            support if the issue persists.
+            We couldn&apos;t load your posted jobs. Please try again later or contact support if the issue persists.
           </p>
           <button
             onClick={() => refetch()}
@@ -166,7 +145,7 @@ const MyPostedJobs = () => {
           </button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -176,12 +155,8 @@ const MyPostedJobs = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                My Posted Jobs
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Manage and track all your job postings
-              </p>
+              <h1 className="text-3xl font-bold text-gray-900">My Posted Jobs</h1>
+              <p className="text-gray-600 mt-1">Manage and track all your job postings</p>
             </div>
             <Link to="/postJob">
               <button className="mt-4 md:mt-0 flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -223,16 +198,16 @@ const MyPostedJobs = () => {
             <>
               <div className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-100">
                 <p className="text-blue-800">
-                  <span className="font-semibold">{filteredJobs.length}</span>{" "}
-                  job postings found
+                  <span className="font-semibold">{filteredJobs.length}</span> job postings found
                 </p>
               </div>
 
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {sortedJobs.map((job) => {
-                  const daysRemaining = getDaysRemaining(job.deadline);
-                  const isExpired = daysRemaining === "Expired";
-                  const totalApplicants = applicantCounts[job._id];
+                  const daysRemaining = getDaysRemaining(job.deadline)
+                  const isExpired = daysRemaining === "Expired"
+                  const totalApplicants = applicantCounts[job._id]
+                  const hiredCount = job.recruited || 0
 
                   return (
                     <div
@@ -241,28 +216,20 @@ const MyPostedJobs = () => {
                         isExpired ? "border-red-200" : "border-gray-200"
                       }`}
                     >
-                      <div
-                        className={`h-2 ${isExpired ? "bg-red-500" : "bg-blue-600"}`}
-                      ></div>
+                      <div className={`h-2 ${isExpired ? "bg-red-500" : "bg-blue-600"}`}></div>
                       <div className="p-6">
                         <div className="flex justify-between items-start mb-4">
-                          <h2 className="text-xl font-bold text-gray-900 line-clamp-2">
-                            {job.jobTitle}
-                          </h2>
+                          <h2 className="text-xl font-bold text-gray-900 line-clamp-2">{job.jobTitle}</h2>
                           <span
                             className={`px-3 py-1 text-xs font-medium rounded-full ${
-                              isExpired
-                                ? "bg-red-100 text-red-800"
-                                : "bg-blue-100 text-blue-800"
+                              isExpired ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"
                             }`}
                           >
                             {daysRemaining}
                           </span>
                         </div>
 
-                        <p className="text-gray-700 mb-4 line-clamp-2">
-                          {job.jobDescription}
-                        </p>
+                        <p className="text-gray-700 mb-4 line-clamp-2">{job.jobDescription}</p>
 
                         <div className="space-y-2 mb-4">
                           <div className="flex items-center text-gray-600">
@@ -282,23 +249,26 @@ const MyPostedJobs = () => {
                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                           <div className="text-lg font-semibold text-green-600">
                             ৳ {job.salary}
-                            <span className="text-sm font-normal text-gray-600 ml-1">
-                              / Month
-                            </span>
+                            <span className="text-sm font-normal text-gray-600 ml-1">/ Month</span>
                           </div>
-                          <div className="flex items-center text-gray-500 text-sm">
-                            <Clock className="h-4 w-4 mr-1" />
-                            <span>
-                              {totalApplicants === undefined
-                                ? "..."
-                                : `${totalApplicants} applicants`}
-                            </span>
+                          <div className="flex space-x-4">
+                            <div className="flex items-center text-gray-500 text-sm">
+                              <Clock className="h-4 w-4 mr-1" />
+                              <span>{totalApplicants === undefined ? "..." : `${totalApplicants} applicants`}</span>
+                            </div>
+                            <div className="flex items-center text-green-600 text-sm">
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              <span>{hiredCount} hired</span>
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       <div>
-                        <RecruitmentProgressBar stages={job?.recruitmentStages} completedStages={job?.completedStages} />
+                        <RecruitmentProgressBar
+                          stages={job?.recruitmentStages}
+                          completedStages={job?.completedStages}
+                        />
                       </div>
 
                       <div className="bg-gray-50 px-6 py-3 flex justify-between">
@@ -316,7 +286,7 @@ const MyPostedJobs = () => {
                         </Link>
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
             </>
@@ -325,12 +295,9 @@ const MyPostedJobs = () => {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Briefcase className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-1">
-                No jobs posted yet
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">No jobs posted yet</h3>
               <p className="text-gray-600 max-w-md mx-auto">
-                You haven&apos;t posted any jobs yet. Create your first job posting
-                to start receiving applications.
+                You haven&apos;t posted any jobs yet. Create your first job posting to start receiving applications.
               </p>
               <Link to="/post-job">
                 <button className="mt-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
@@ -342,7 +309,7 @@ const MyPostedJobs = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MyPostedJobs;
+export default MyPostedJobs

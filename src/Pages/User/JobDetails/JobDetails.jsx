@@ -4,7 +4,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import useAxiosBase from "../../../CustomHooks/useAxiosBase";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../../Providers/AuthProvider";
 import Swal from "sweetalert2";
 import {
@@ -21,6 +21,7 @@ import {
   MdCheck,
 } from "react-icons/md";
 import useUserRole from "../../../CustomHooks/useUserRole";
+import RecruitmentProgressBar from "../../Recruiter/MyPostedJobs/RecruitmentProgressBar";
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -29,6 +30,8 @@ const JobDetails = () => {
   const axiosBase = useAxiosBase();
   const navigate = useNavigate();
   const location = useLocation();
+  const [progressStages, setProgressStages] = useState([]);
+  const [isRejected, setIsRejected] = useState(false);
 
   const { data: job = null, isLoading } = useQuery({
     queryKey: [`job${jobId}`],
@@ -65,7 +68,19 @@ const JobDetails = () => {
     enabled: !!jobId && !!userInfo?._id, // Only run the query if jobId and userId are present
   });
 
-  if (isLoading || userLoading || applicationCheckLoading) {
+  const { isLoading: stageLoading } = useQuery({
+    queryKey: ["progressStages", userInfo?._id, jobId],
+    queryFn: async () => {
+      const { data } = await axiosBase.get(
+        `/applications/progressStages/${jobId}/${userInfo?._id}`
+      );
+      setProgressStages(data.progressStages || []);
+      setIsRejected(data.rejected || false);
+    },
+    enabled: !!userInfo?._id && !!jobId,
+  });
+
+  if (isLoading || userLoading || applicationCheckLoading || stageLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center">
@@ -114,6 +129,7 @@ const JobDetails = () => {
     onSitePlace,
     vacancy,
     userInfo: jobPosterInfo,
+    recruitmentStages,
   } = job;
 
   // Format salary with commas
@@ -488,14 +504,52 @@ const JobDetails = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="bg-green-50 border border-green-100 rounded-md p-4 text-center">
-                        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-600 mb-2">
-                          <MdCheck className="w-6 h-6" />
-                        </div>
-                        <p className="text-green-800 font-medium text-sm">
-                          Application Submitted
-                        </p>
-                      </div>
+                      <>
+                        {!isRejected && isApplied?.hasApplied && (
+                          <div>
+                            <div className="bg-green-50 border border-green-100 rounded-md p-4 text-center">
+                              <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-600 mb-2">
+                                <MdCheck className="w-6 h-6" />
+                              </div>
+                              <p className="text-green-800 font-medium text-sm">
+                                Application Submitted
+                              </p>
+                            </div>
+                            <RecruitmentProgressBar
+                              stages={recruitmentStages || []}
+                              completedStages={progressStages || []}
+                            />
+                          </div>
+                        )}
+
+                        {isRejected && (
+                          <div className="mt-4 bg-red-50 border border-red-100 rounded-md p-4 text-center">
+                            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 text-red-600 mb-2">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </div>
+                            <p className="text-red-800 font-medium text-sm mb-1">
+                              Application Rejected
+                            </p>
+                            <p className="text-red-700 text-xs">
+                              We&apos;re sorry, but your application was not
+                              selected to move forward at this time.
+                            </p>
+                          </div>
+                        )}
+                      </>
                     )}
                   </>
                 ) : (
