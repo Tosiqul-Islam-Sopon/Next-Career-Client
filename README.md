@@ -27,7 +27,6 @@ https://next-career-9a82c.web.app/
 | Tech             | Description                     |
 |------------------|---------------------------------|
 | React.js         | Frontend UI Framework           |
-| Redux Toolkit    | State Management                |
 | Tailwind CSS     | Utility-first CSS styling       |
 | React Router     | Client-side routing             |
 | Axios            | API communication               |
@@ -65,5 +64,6 @@ https://next-career-9a82c.web.app/
    VITE_STORAGEBUCKET= your_firebase_storage_bucket
    VITE_MESSAGINGSENDERID= your_firebase_message_sender_id
    VITE_APPID= your_firebase_app_id
-
-
+4. **Run the server**
+   ```bash
+   npm run dev
