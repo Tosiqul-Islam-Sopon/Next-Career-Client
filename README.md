@@ -9,6 +9,7 @@
 The Next Career Client offers:
 
 - A personalized job board for applicants and recruiters
+- Real-time notifications via WebSockets (e.g., recruiter actions, stage updates)
 - Application progress tracking and visual indicators
 - Admin dashboard for managing categories, sectors, and job stats
 - Secure login with role-based access (Admin, Recruiter, Candidate)
@@ -31,6 +32,7 @@ https://next-career-9a82c.web.app/
 | React Router     | Client-side routing             |
 | Axios            | API communication               |
 | Firebase         | Authentication and auth guard   |
+| Socket.IO        | WebSocket-based real-time communication   |
 
 ---
 
@@ -41,6 +43,7 @@ https://next-career-9a82c.web.app/
 
 ✅ Candidate dashboard with job applications  
 ✅ Recruiter panel with stage-based tracking  
+✅ Real-time notification system via Socket.IO
 ✅ Admin reports and top categories/companies  
 ✅ Role-specific authentication and routing  
 ✅ Mobile-first responsive UI  
