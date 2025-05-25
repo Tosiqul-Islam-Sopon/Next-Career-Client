@@ -1,6 +1,6 @@
-# 🎯 Next Career - Client
+# 🎯 Next Career
 
-**Next Career** is a modern job recruitment platform built with React that connects job seekers and recruiters through a streamlined, intuitive interface. This repository contains the frontend client application, featuring role-based dashboards, application tracking, and dynamic recruitment stage workflows.
+**[Next Career](https://next-career-9a82c.web.app/)** is a modern job recruitment platform built with React that connects job seekers and recruiters through a streamlined, intuitive interface. This repository contains the frontend client application, featuring role-based dashboards, application tracking, and dynamic recruitment stage workflows.
 
 ---
 
