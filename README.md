@@ -43,7 +43,7 @@ https://next-career-9a82c.web.app/
 
 ✅ Candidate dashboard with job applications  
 ✅ Recruiter panel with stage-based tracking  
-✅ Real-time notification system via Socket.IO
+✅ Real-time notification system via Socket.IO  
 ✅ Admin reports and top categories/companies  
 ✅ Role-specific authentication and routing  
 ✅ Mobile-first responsive UI  
